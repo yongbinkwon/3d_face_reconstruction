@@ -60,12 +60,12 @@ class AllFaceDataset(BaseDataset):
                 img_lists = f.readlines()
             img_lists = self.fill_list(img_lists)
             self.sizes.append(len(img_lists))
-            self.dataset_lists.append(sorted(img_lists))
+            self.dataset_lists.append(img_lists)
 
             with open(land_mark_list[n]) as f:
                 landmarks = f.readlines()
                 landmarks = self.fill_list(landmarks)
-                self.landmark_paths.append(sorted(landmarks))
+                self.landmark_paths.append(landmarks)
 
         self.dataset_size = min(self.sizes)
         self.initialized = False

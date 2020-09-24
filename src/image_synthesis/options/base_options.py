@@ -7,6 +7,7 @@ import torch
 import models
 import data
 import pickle
+from model_fitting.utils.ddfa import str2bool
 
 
 class BaseOptions():
@@ -67,6 +68,21 @@ class BaseOptions():
         parser.add_argument('--label_mask', action='store_true', help='whether to use face mask')
         parser.add_argument('--heatmap_size', type=float, default=3, help='the size of the heatmap, used in rotatespade model')
         parser.add_argument('--erode_kernel', type=int, default=21, help='erode kernel size, used in renderer')
+
+        #3ddfa
+        parser.add_argument('-m', '--mode', default='gpu', type=str, help='gpu or cpu mode')
+        parser.add_argument('--bbox_init', default='two', type=str,
+                            help='one|two: one-step bbox initialization or two-step')
+        parser.add_argument('--dump_2d_img', default='true', type=str2bool, help='whether to save 3d rendered image')
+        parser.add_argument('--dump_param', default='true', type=str2bool, help='whether to save param')
+        parser.add_argument('--dump_lmk', default='true', type=str2bool, help='whether to save landmarks')
+        parser.add_argument('--save_dir', default='results', type=str, help='dir to save result')
+        parser.add_argument('--save_lmk_dir', default='model_fitting/example', type=str, help='dir to save landmark result')
+        parser.add_argument('--img_list', default='model_fitting/example/file_list.txt', type=str, help='test image list file')
+        parser.add_argument('--img_prefix', default='model_fitting/example/Images', type=str, help='test image prefix')
+        parser.add_argument('--rank', default=0, type=int, help='used when parallel run')
+        parser.add_argument('--world_size', default=1, type=int, help='used when parallel run')
+        parser.add_argument('--resume_idx', default=0, type=int)
 
         self.initialized = True
         return parser

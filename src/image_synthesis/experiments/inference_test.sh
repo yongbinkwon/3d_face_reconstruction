@@ -1,4 +1,4 @@
-python -u synthesize_images.py  \
+python -u inference_test.py  \
         --names rs_model \
         --dataset example \
         --list_start 0 \
@@ -16,3 +16,4 @@ python -u synthesize_images.py  \
         --render_thread 1 \
         --label_mask \
         --erode_kernel 21 \
+        --yaw_poses -50 \

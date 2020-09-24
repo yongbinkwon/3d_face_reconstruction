@@ -110,7 +110,7 @@ class Render(object):
     def __init__(self, opt):
         self.opt = opt
         self.render_size = opt.crop_size
-        self.d = './3ddfa/train.configs'
+        self.d = './model_fitting/train.configs'
         w_shp = _load(osp.join(self.d, 'w_shp_sim.npy'))
         w_exp = _load(osp.join(self.d, 'w_exp_sim.npy'))  # simplified version
         u_shp = _load(osp.join(self.d, 'u_shp.npy'))
@@ -119,7 +119,7 @@ class Render(object):
         self.pose_noise = getattr(opt, 'pose_noise', False)
         self.large_pose = getattr(opt, 'large_pose', False)
         u = u_shp + u_exp
-        tri = sio.loadmat('./3ddfa/visualize/tri.mat')['tri']   # 3 * 53215
+        tri = sio.loadmat('./model_fitting/visualize/tri.mat')['tri']   # 3 * 53215
         faces_np = np.expand_dims(tri.T, axis=0).astype(np.int32) - 1
 
         self.std_size = 120
@@ -350,14 +350,14 @@ class Render(object):
         return tex_a
 
 
-    def _forward(self, param_file, img_ori, M=None,
+    def _forward(self, param, img_ori, M=None,
                  pose_noise=True, mean_exp=False, mean_shp=False, align=True, frontal=True, 
                  large_pose=False, yaw_pose=None, pitch_pose=None):
         '''
         img_ori: rgb image, normalized within 0-1, h * w * 3
         return: render image, bgr
         '''
-        param = np.fromfile(param_file, sep=' ')
+        #param = np.fromfile(param_file, sep=' ')
 
         vertices, original_angle = self.generate_vertices_and_rescale_to_img(param, pose_noise=pose_noise,
                                                              mean_shp=mean_shp, mean_exp=mean_exp, frontal=frontal, 
@@ -414,10 +414,10 @@ class Render(object):
                                      :] / h * self.render_size
         return tex_a, vertices, vertices_out, vertices_in_ori_img, align_vertices, original_angle
 
-    def rotate_render(self, params, images, M=None, with_BG=False, pose_noise=False, large_pose=False, 
+    def rotate_render(self, param, images, M=None, with_BG=False, pose_noise=False, large_pose=False, 
                       align=True, frontal=True, erode=True, grey_background=False, avg_BG=True,
                       yaw_pose=None, pitch_pose=None):
-        
+                      
         bz, c, w, h = images.size()
         pose_noise = self.pose_noise
         large_pose = self.large_pose
@@ -436,7 +436,7 @@ class Render(object):
         with torch.no_grad():
             for n in range(bz):
                 tex_a, vertice, vertice_out, vertice_in_ori_img, align_vertice, original_angle\
-                    = self._forward(params[n], images[n], M[n],
+                    = self._forward(param, images[n], M[n],
                                     pose_noise=pose_noise, align=align, frontal=frontal,
                                     large_pose=large_pose, yaw_pose=yaw_pose, pitch_pose=pitch_pose)
                 vertices.append(vertice)

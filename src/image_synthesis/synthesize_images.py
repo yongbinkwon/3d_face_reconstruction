@@ -56,33 +56,6 @@ def create_paths(save_path, img_path, foldername='orig', folderlevel=2, pose='0'
         rotated_file_savepath = os.path.join(rotated_file_savepath, file_name)
     return rotated_file_savepath
 
-def affine_align(img, landmark=None, **kwargs):
-    M = None
-    src = np.array([
-     [38.2946, 51.6963],
-     [73.5318, 51.5014],
-     [56.0252, 71.7366],
-     [41.5493, 92.3655],
-     [70.7299, 92.2041] ], dtype=np.float32 )
-    src=src * 224 / 112
-
-    dst = landmark.astype(np.float32)
-    tform = trans.SimilarityTransform()
-    tform.estimate(dst, src)
-    M = tform.params[0:2,:]
-    warped = cv2.warpAffine(img, M, (224, 224), borderValue = 0.0)
-    return warped
-
-def landmark_68_to_5(t68):
-    le = t68[36:42, :].mean(axis=0, keepdims=True)
-    re = t68[42:48, :].mean(axis=0, keepdims=True)
-    no = t68[31:32, :]
-    lm = t68[48:49, :]
-    rm = t68[54:55, :]
-    t5 = np.concatenate([le, re, no, lm, rm], axis=0)
-    t5 = t5.reshape(10)
-    return t5
-
 
 def save_img(img, save_path):
     image_numpy = util.tensor2im(img)
@@ -100,10 +73,6 @@ if __name__ == '__main__':
     folderlevel = data_info.folder_level[datanum]
 
     dataloaders = data.create_dataloader_test(opt)
-
-    visualizer = Visualizer(opt)
-    iter_counter = IterationCounter(opt, len(dataloaders[0]) * opt.render_thread)
-    # create a webpage that summarizes the all results
 
     ngpus = opt.device_count
 
@@ -127,13 +96,10 @@ if __name__ == '__main__':
         names = [opt.name]
         save_path = create_path(create_path(opt.save_path, opt.name), opt.dataset)
         save_paths = [save_path]
-        f = [open(
-                os.path.join(save_path, opt.dataset + str(opt.list_start) + str(opt.list_end) + '_rotate_lmk.txt'), 'w')]
     else:
         models = []
         names = []
         save_paths = []
-        f = []
         for name in opt.names.split(','):
             opt.name = name
             model = TestModel(opt)
@@ -146,54 +112,32 @@ if __name__ == '__main__':
             names.append(name)
             save_path = create_path(create_path(opt.save_path, opt.name), opt.dataset)
             save_paths.append(save_path)
-            f_rotated = open(
-                os.path.join(save_path, opt.dataset + str(opt.list_start) + str(opt.list_end) + '_rotate_lmk.txt'), 'w')
-            f.append(f_rotated)
 
     # test
-    landmarks = []
     dataloader_iterator = iter(dataloaders[0])
-
-    process_num = opt.list_start
 
     fitting_model, alignment_model, img_list = load_3ddfa(opt)
     for img_idx, img_fp in enumerate(tqdm(img_list)):
 
       param, yaw_pose = get_param(fitting_model, alignment_model, img_fp, opt)
-      data = get_multipose_test_input(next(dataloader_iterator), render_layer_list[0], rotate_yaw_pose(yaw_pose), param)
+      data = get_rotated_test_input(next(dataloader_iterator), render_layer_list[0], rotate_yaw_pose(yaw_pose), param)
 
-        #for runtime benchmarking remove this
       img_path = data['path']
       poses = data['pose_list']
-      rotated_landmarks = data['rotated_landmarks'][:, :, :2].cpu().numpy().astype(np.float)
-      rotated_landmarks_106 = data['rotated_landmarks_106'][:, :, :2].cpu().numpy().astype(np.float)
 
 
       generate_rotateds = []
       for model in models:
           generate_rotated = model.forward(data, mode='single')
           generate_rotateds.append(generate_rotated)
-      
-      #for runtime benchmarking remove this
+
       for n, name in enumerate(names):
           opt.name = name
           for b in range(generate_rotateds[n].shape[0]):
-              # get 5 key points
-              rotated_keypoints = landmark_68_to_5(rotated_landmarks[b])
               # get savepaths
               rotated_file_savepath = create_paths(save_paths[n], img_path[b], folderlevel=folderlevel, pose=poses[b])
-
               image_numpy = save_img(generate_rotateds[n][b], rotated_file_savepath)
-              rotated_keypoints_str = rotated_file_savepath + ' 1 ' + ' '.join([str(int(n)) for n in rotated_keypoints]) + '\n'
-              f[n].write(rotated_keypoints_str)
 
-              if opt.align:
-                  aligned_file_savepath = create_paths(save_paths[n], img_path[b], 'aligned', folderlevel=folderlevel, pose=poses[b])
-                  warped = affine_align(image_numpy, rotated_keypoints.reshape(5, 2))
-                  util.save_image(warped, aligned_file_savepath, create_dir=True)
-
-              # save 106 landmarks
-              rotated_keypoints_106 = rotated_landmarks_106[b] # shape: 106 * 2
 
 """
     except KeyboardInterrupt:

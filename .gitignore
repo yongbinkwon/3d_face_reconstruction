@@ -13,7 +13,7 @@ checkpoints/
 *.npy
 .DS_Store
 .ftpconfig 
-3ddfa/train.configs
-3ddfa/models
+model_fitting/train.configs
+model_fitting/models
 sftp-config.json
 .env

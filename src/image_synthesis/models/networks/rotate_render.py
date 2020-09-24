@@ -50,7 +50,7 @@ class TestRender(Render):
         with torch.no_grad():
             for n in range(bz):
                 tex_a, vertice, vertice_out, vertice_in_ori_img, align_vertice, original_angle \
-                    = self._forward(params[n], images[n], M[n],
+                    = self._forward(params, images[n], M[n],
                                     pose_noise=pose_noise, align=align, frontal=frontal, 
                                     yaw_pose=yaw_pose, pitch_pose=pitch_pose)
                 vertices.append(vertice)
