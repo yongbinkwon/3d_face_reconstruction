@@ -7,7 +7,7 @@ class BaseNetwork(nn.Module):
         super(BaseNetwork, self).__init__()
 
     @staticmethod
-    def modify_commandline_options(parser, is_train):
+    def modify_commandline_options(parser):
         return parser
 
     def print_network(self):

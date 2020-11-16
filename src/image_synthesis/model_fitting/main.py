@@ -19,7 +19,7 @@ import face_alignment
 from utils.ddfa import ToTensorGjz, NormalizeGjz, str2bool
 import scipy.io as sio
 from utils.inference import get_suffix, parse_roi_box_from_landmark, crop_img, predict_68pts, dump_to_ply, dump_vertex, \
-    draw_landmarks, predict_dense, parse_roi_box_from_bbox, get_colors, write_obj_with_colors
+    predict_dense, parse_roi_box_from_bbox, get_colors, write_obj_with_colors
 from utils.cv_plot import plot_pose_box
 from utils.estimate_pose import parse_pose
 from utils.render import get_depths_image, cget_depths_image, cpncc
@@ -181,7 +181,6 @@ def main(args):
             cv2.imwrite(wfp, pncc_feature[:, :, ::-1])  # cv2.imwrite will swap RGB -> BGR
             print('Dump to {}'.format(wfp))
         if args.dump_res:
-            draw_landmarks(img_ori, pts_res, wfp=img_fp.replace(suffix, '_3DDFA.jpg'), show_flg=args.show_flg)
 
 
 if __name__ == '__main__':

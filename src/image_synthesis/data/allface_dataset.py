@@ -13,7 +13,7 @@ dataset_info = dataset_info()
 
 class AllFaceDataset(BaseDataset):
     @staticmethod
-    def modify_commandline_options(parser, is_train):
+    def modify_commandline_options(parser):
         parser.add_argument('--no_pairing_check', action='store_true',
                             help='If specified, skip sanity check of correct label-image file pairing')
         return parser
@@ -32,13 +32,12 @@ class AllFaceDataset(BaseDataset):
     def initialize(self, opt):
         self.opt = opt
         dataset_num = dataset_info.get_dataset(opt)
+        
         self.prefix = [dataset_info.prefix[num] for num in dataset_num]
 
         file_list = [dataset_info.file_list[num] for num in dataset_num]
 
         land_mark_list = [dataset_info.land_mark_list[num] for num in dataset_num]
-
-        self.params_dir = [dataset_info.params_dir[num] for num in dataset_num]
 
         self.folder_level = [dataset_info.folder_level[num] for num in dataset_num]
 
@@ -61,6 +60,8 @@ class AllFaceDataset(BaseDataset):
             img_lists = self.fill_list(img_lists)
             self.sizes.append(len(img_lists))
             self.dataset_lists.append(img_lists)
+            print(self.dataset_lists)
+            print("AAAAAAAAAAAAAAAAAAAAAAAAAA")
 
             with open(land_mark_list[n]) as f:
                 landmarks = f.readlines()
@@ -134,7 +135,6 @@ class AllFaceDataset(BaseDataset):
         if img is None:
             raise Exception('None Image')
 
-        param_path = self.get_param_file(image_path, dataset_num)
 
         # img = cv2.imread(image_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -150,7 +150,6 @@ class AllFaceDataset(BaseDataset):
 
         input_dict = {
                       'image': wrapped_img,
-                      'param_path': param_path,
                       'M': M,
                       'path': image_path
                       }

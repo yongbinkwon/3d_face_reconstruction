@@ -9,8 +9,8 @@ from models.rotatespade_model import RotateSPADEModel
 
 class TestModel(RotateSPADEModel):
     @staticmethod
-    def modify_commandline_options(parser, is_train):
-        networks.modify_commandline_options(parser, is_train)
+    def modify_commandline_options(parser):
+        networks.modify_commandline_options(parser)
         return parser
 
     def __init__(self, opt):

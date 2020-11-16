@@ -77,48 +77,38 @@ def create_dataloader(opt):
         batch_size=opt.batchSize,
         shuffle=not opt.serial_batches,
         num_workers=int(opt.nThreads),
-        drop_last=opt.isTrain
+        drop_last=False
     )
     return dataloader
 
 
 class MySampler(Sampler):
 
-    def __init__(self, opt, dataset, render_thread=None, rank=None, round_up=True):
+    def __init__(self, opt, dataset, render_thread=None, rank=None):
         self.dataset = dataset
         self.opt = opt
         self.render_thread = render_thread
         self.rank = rank
-        self.round_up = round_up
         self.epoch = 0
 
         self.common_num = self.opt.batchSize * self.render_thread
-        if self.round_up:
-            self.total_size = int(math.ceil(len(self.dataset) * 1.0 / self.common_num)) * self.common_num
-        else:
-            self.total_size = len(self.dataset)
+        self.total_size = len(self.dataset)
         self.num_samples = int(math.ceil(self.total_size / self.render_thread))
 
     def __iter__(self):
         # deterministically shuffle based on epoch
         g = torch.Generator()
         g.manual_seed(self.epoch)
-        if self.opt.isTrain:
-            indices = list(torch.randperm(len(self.dataset), generator=g))
-        else:
-            indices = list(torch.arange(len(self.dataset)))
+
+        indices = list(torch.arange(len(self.dataset)))
 
         # add extra samples to make it evenly divisible
-        if self.round_up:
-            indices += indices[:(self.total_size - len(indices))]
         assert len(indices) == self.total_size, 'indices {} != total_size {}'.format(len(indices), self.total_size)
 
         # subsample
         offset = self.num_samples * self.rank
         # indices = indices[offset:offset + self.num_samples]
         indices = indices[self.rank::self.render_thread]
-        if self.round_up or (not self.round_up and self.rank == 0):
-            assert len(indices) == self.num_samples
 
         return iter(indices)
 
@@ -135,15 +125,14 @@ def create_dataloader_test(opt):
     instance.initialize(opt)
     print("dataset [%s] of size %d was created" %
           (type(instance).__name__, len(instance)))
-    samplers = [MySampler(opt, instance, render_thread=opt.render_thread, rank=i, round_up=opt.isTrain) for i in range(opt.render_thread)]
+    samplers = [MySampler(opt, instance, render_thread=opt.render_thread, rank=i) for i in range(opt.render_thread)]
     dataloaders = [
         torch.utils.data.DataLoader(
             instance,
             batch_size=opt.batchSize,
             shuffle=False,
             num_workers=int(opt.nThreads),
-            sampler=samplers[i],
-            drop_last=opt.isTrain,
+            sampler=samplers[i]
         )
         for i in range(opt.render_thread)
     ]

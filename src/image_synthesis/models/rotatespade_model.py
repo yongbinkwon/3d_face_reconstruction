@@ -8,8 +8,8 @@ import os
 
 class RotateSPADEModel(torch.nn.Module):
     @staticmethod
-    def modify_commandline_options(parser, is_train):
-        networks.modify_commandline_options(parser, is_train)
+    def modify_commandline_options(parser):
+        networks.modify_commandline_options(parser)
         return parser
 
     def __init__(self, opt):
@@ -25,14 +25,6 @@ class RotateSPADEModel(torch.nn.Module):
 
         self.netG, self.netD, self.netD_rotate = self.initialize_networks(opt)
 
-
-        # set loss functions
-        if opt.isTrain:
-            self.criterionGAN = networks.GANLoss(
-                opt.gan_mode, tensor=self.FloatTensor, opt=self.opt)
-            self.criterionFeat = torch.nn.L1Loss()
-            if not opt.no_vgg_loss:
-                self.criterionVGG = networks.VGGLoss(self.opt)
 
     def landmark_68_to_5(self, t68):
         le = t68[36:42, :].mean(axis=0, keepdims=True)
@@ -56,12 +48,8 @@ class RotateSPADEModel(torch.nn.Module):
             heatmap = curve.points_to_heatmap_68points(landmarks[i], 13, size, self.opt.heatmap_size)
 
             heatmap2 = curve.combine_map(heatmap, no_guassian=no_guassian)
-            if self.opt.isTrain:
-                if np.random.randint(2):
-                    heatmap = np.zeros_like(heatmap)
-            else:
-                if torch.abs(original_angles[i]) < 0.255:
-                    heatmap = np.zeros_like(heatmap)
+            if torch.abs(original_angles[i]) < 0.255:
+                heatmap = np.zeros_like(heatmap)
 
             all_heatmap.append(heatmap2)
             all_orig_heatmap.append(heatmap)
@@ -134,12 +122,6 @@ class RotateSPADEModel(torch.nn.Module):
 
     def create_optimizers(self, opt):
         G_params = list(self.netG.parameters())
-        if opt.isTrain:
-            if opt.train_rotate:
-                D_params = list(self.netD.parameters()) + list(self.netD_rotate.parameters())
-            else:
-                D_params = self.netD.parameters()
-
 
         if opt.no_TTUR:
             beta1, beta2 = opt.beta1, opt.beta2
@@ -167,21 +149,11 @@ class RotateSPADEModel(torch.nn.Module):
     def initialize_networks(self, opt):
 
         netG = networks.define_G(opt)
-        netD = networks.define_D(opt) if opt.isTrain else None
-        netD_rotate = networks.define_D(opt) if opt.isTrain else None
+        netD = None
+        netD_rotate = None
         pretrained_path = ''
-        if not opt.isTrain or opt.continue_train:
-            self.load_network(netG, 'G', opt.which_epoch, pretrained_path)
-            if opt.isTrain and not opt.noload_D:
-                self.load_network(netD, 'D', opt.which_epoch, pretrained_path)
-                self.load_network(netD_rotate, 'D_rotate', opt.which_epoch, pretrained_path)
-        else:
-
-            if opt.load_separately:
-                netG = self.load_separately(netG, 'G', opt)
-                if not opt.noload_D:
-                    netD = self.load_separately(netD, 'D', opt)
-                    netD_rotate = self.load_separately(netD_rotate, 'D_rotate', opt)
+        
+        self.load_network(netG, 'G', opt.which_epoch, pretrained_path)
 
         return netG, netD, netD_rotate
 

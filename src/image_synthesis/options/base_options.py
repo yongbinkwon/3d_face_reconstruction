@@ -100,12 +100,12 @@ class BaseOptions():
         # modify model-related parser options
         model_name = opt.model
         model_option_setter = models.get_option_setter(model_name)
-        parser = model_option_setter(parser, self.isTrain)
+        parser = model_option_setter(parser)
 
         # modify dataset-related parser options
         dataset_mode = opt.dataset_mode
         dataset_option_setter = data.get_option_setter(dataset_mode)
-        parser = dataset_option_setter(parser, self.isTrain)
+        parser = dataset_option_setter(parser)
 
         opt, unknown = parser.parse_known_args()
 
@@ -166,22 +166,17 @@ class BaseOptions():
     def parse(self, save=False):
 
         opt = self.gather_options()
-        opt.isTrain = self.isTrain   # train or test
 
         self.print_options(opt)
-        if opt.isTrain:
-            self.save_options(opt)
 
-        if not opt.isTrain:
-            # change radian to angle
-            if opt.yaw_poses is not None:
-                for pose in opt.yaw_poses:
-                    assert abs(pose) <= 90, "yaw pose must be between [-90, 90]"
-                opt.yaw_poses = [round(x / 180.0 * math.pi, 2) for x in opt.yaw_poses]
-            if opt.pitch_poses is not None:
-                for pose in opt.pitch_poses:
-                    assert abs(pose) <= 90, "pitch pose must be between [-90, 90]"
-                opt.pitch_poses = [round(x / 180.0 * math.pi, 2) for x in opt.pitch_poses]
+        if opt.yaw_poses is not None:
+            for pose in opt.yaw_poses:
+                assert abs(pose) <= 90, "yaw pose must be between [-90, 90]"
+            opt.yaw_poses = [round(x / 180.0 * math.pi, 2) for x in opt.yaw_poses]
+        if opt.pitch_poses is not None:
+            for pose in opt.pitch_poses:
+                assert abs(pose) <= 90, "pitch pose must be between [-90, 90]"
+            opt.pitch_poses = [round(x / 180.0 * math.pi, 2) for x in opt.pitch_poses]
 
         # Set semantic_nc based on the option.
         # This will be convenient in many places

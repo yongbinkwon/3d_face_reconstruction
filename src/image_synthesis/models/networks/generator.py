@@ -27,7 +27,7 @@ class Interpolate(nn.Module):
 
 class RotateGenerator(BaseNetwork):
         @staticmethod
-        def modify_commandline_options(parser, is_train):
+        def modify_commandline_options(parser):
             parser.add_argument('--resnet_n_downsample', type=int, default=4,
                                 help='number of downsampling layers in netG')
             parser.add_argument('--resnet_n_blocks', type=int, default=9,

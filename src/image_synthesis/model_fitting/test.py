@@ -24,7 +24,7 @@ import time
 from utils.ddfa import ToTensorGjz, NormalizeGjz, str2bool
 import scipy.io as sio
 from utils.inference import get_suffix, parse_roi_box_from_landmark, crop_img, predict_68pts, dump_to_ply, dump_vertex, \
-    draw_landmarks, predict_dense, parse_roi_box_from_bbox, get_colors, write_obj_with_colors, get_aligned_param, parse_quality_list_part
+    predict_dense, parse_roi_box_from_bbox, get_colors, write_obj_with_colors, get_aligned_param, parse_quality_list_part
 from utils.cv_plot import plot_pose_box
 from utils.estimate_pose import parse_pose
 from utils.params import param_mean, param_std
