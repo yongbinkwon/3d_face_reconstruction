@@ -1,16 +1,13 @@
+import os
 import numpy as np
-
 import skimage.transform as trans
 import cv2
-
-import os
 import torch
 
 
 
 
-def get_input(data, render, yaw_pose, param):
-    real_image = data['image']
+def get_input(real_image, M, img_fp, render, yaw_pose, param):
     rotated_meshs = []
     rotated_landmarks_list = []
     original_angles_list = []
@@ -19,12 +16,12 @@ def get_input(data, render, yaw_pose, param):
     real_images = []
     pose_list = []
     rotated_mesh, rotate_landmarks, original_angles, rotate_landmarks_106\
-        = render.rotate_render(param, real_image, data['M'], yaw_pose=yaw_pose)
+        = render.rotate_render(param, real_image, M, yaw_pose=yaw_pose)
     rotated_meshs.append(rotated_mesh)
     rotated_landmarks_list.append(rotate_landmarks)
     rotated_landmarks_list_106.append(rotate_landmarks_106)
     original_angles_list.append(original_angles)
-    paths += data['path']
+    paths += img_fp
     pose_list += ['yaw_{}'.format(yaw_pose) for i in range(len(data['path']))]
     real_images.append(real_image)
     rotated_meshs = torch.cat(rotated_meshs, 0)

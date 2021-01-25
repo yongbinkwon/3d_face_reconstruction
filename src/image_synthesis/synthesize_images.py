@@ -1,16 +1,15 @@
 import os
 import numpy as np
-import data
-from options.test_options import TestOptions
-from models.test_model import TestModel
-from util import util
+from .options.test_options import TestOptions
+from .models.test_model import TestModel
+from .util import util
 import torch
 import cv2
 import skimage.transform as trans
-from models.networks.rotate_render import TestRender
+from .models.networks.rotate_render import TestRender
 from tqdm import tqdm
-from data.data_utils import get_input
-from model_fitting.model_fitting import load_3ddfa, get_param
+from .data.data_utils import get_input
+from .model_fitting.model_fitting import load_3ddfa, get_param
 
 
 def create_path(a_path, b_path):
@@ -127,17 +126,18 @@ class Synthesize():
         self.fitting_model, self.alignment_model = load_3ddfa(self.opt)
 
 
-    def synthesize_image(self, img_fp):
-        
-        img = cv2.imread(os.path.join(self.opt.img_prefix, img_fp))
-        if img is None:
+    def synthesize_image(self, img_fp_suffix):
+        img_fp = os.path.join(self.opt.img_prefix, img_fp_suffix)
+        param, landmarks, img_orig, yaw_pose = get_param(
+            self.fitting_model, self.alignment_model, img_fp, self.opt
+        )
+        if img_orig is None:
             raise Exception('No Image')
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = cv2.cvtColor(img_orig, cv2.COLOR_BGR2RGB)
 
-        param, landmarks, img_ori, yaw_pose = get_param(self.fitting_model, self.alignment_model, img_fp, self.opt)
         wrapped_img, M = affine_align(img, landmarks)
         M = torch.from_numpy(M).float()
-        data = get_input(next(self.dataloader_iterator), self.render_layer_list[0], rotate_yaw_pose(yaw_pose), param)
+        data = get_input(wrapped_img, M, img_fp, self.render_layer_list[0], rotate_yaw_pose(yaw_pose), param)
 
         img_path = data['path']
         poses = data['pose_list']
@@ -153,7 +153,7 @@ class Synthesize():
             for b in range(generate_rotateds[n].shape[0]):
                 # get savepaths
                 rotated_file_savepath = create_paths(self.save_paths[n], img_path[b], folderlevel=self.folderlevel, pose=poses[b])
-                image_numpy = save_img(generate_rotateds[n][b], rotated_file_savepath)
+                save_img(generate_rotateds[n][b], rotated_file_savepath)
 
 
 

@@ -58,47 +58,47 @@ def load_3ddfa(args):
 
 def get_param(model, alignment_model, img_fp, args):
 
-      img_ori = cv2.imread(img_fp)
+    img_orig = cv2.imread(img_fp)
 
-      transform = transforms.Compose([ToTensorGjz(), NormalizeGjz(mean=127.5, std=128)])
+    transform = transforms.Compose([ToTensorGjz(), NormalizeGjz(mean=127.5, std=128)])
 
-      # face alignment model use RGB as input, result is a tuple with landmarks and boxes
-      preds = alignment_model.get_landmarks(img_ori[:, :, ::-1])
-      pts_2d_68 = preds[0]
-      #print(preds[0])
-      pts_2d_5 = get_5lmk_from_68lmk(pts_2d_68)
-      roi_box = parse_roi_box_from_landmark(pts_2d_68.T)
+    # face alignment model use RGB as input, result is a tuple with landmarks and boxes
+    preds = alignment_model.get_landmarks(img_orig[:, :, ::-1])
+    pts_2d_68 = preds[0]
+    #print(preds[0])
+    pts_2d_5 = get_5lmk_from_68lmk(pts_2d_68)
+    roi_box = parse_roi_box_from_landmark(pts_2d_68.T)
 
-      img = crop_img(img_ori, roi_box)
-      # import pdb; pdb.set_trace()
+    img = crop_img(img_orig, roi_box)
+    # import pdb; pdb.set_trace()
 
-      # forward: one step
-      img = cv2.resize(img, dsize=(STD_SIZE, STD_SIZE), interpolation=cv2.INTER_LINEAR)
-      input = transform(img).unsqueeze(0)
-      with torch.no_grad():
-          if args.mode == 'gpu':
-              input = input.cuda()
-          param = model(input)
-          param = param.squeeze().cpu().numpy().flatten().astype(np.float32)
+    # forward: one step
+    img = cv2.resize(img, dsize=(STD_SIZE, STD_SIZE), interpolation=cv2.INTER_LINEAR)
+    input = transform(img).unsqueeze(0)
+    with torch.no_grad():
+        if args.mode == 'gpu':
+            input = input.cuda()
+        param = model(input)
+        param = param.squeeze().cpu().numpy().flatten().astype(np.float32)
 
-      pts68 = predict_68pts(param, roi_box)
+    pts68 = predict_68pts(param, roi_box)
 
-      # two-step for more accurate bbox to crop face
-      if args.bbox_init == 'two':
-          roi_box = parse_roi_box_from_landmark(pts68)
-          img_step2 = crop_img(img_ori, roi_box)
-          img_step2 = cv2.resize(img_step2, dsize=(STD_SIZE, STD_SIZE), interpolation=cv2.INTER_LINEAR)
-          input = transform(img_step2).unsqueeze(0)
-          with torch.no_grad():
-              if args.mode == 'gpu':
-                  input = input.cuda()
-              param = model(input)
-              param = param.squeeze().cpu().numpy().flatten().astype(np.float32)
+    # two-step for more accurate bbox to crop face
+    if args.bbox_init == 'two':
+        roi_box = parse_roi_box_from_landmark(pts68)
+        img_step2 = crop_img(img_orig, roi_box)
+        img_step2 = cv2.resize(img_step2, dsize=(STD_SIZE, STD_SIZE), interpolation=cv2.INTER_LINEAR)
+        input = transform(img_step2).unsqueeze(0)
+        with torch.no_grad():
+            if args.mode == 'gpu':
+                input = input.cuda()
+            param = model(input)
+            param = param.squeeze().cpu().numpy().flatten().astype(np.float32)
 
-      pose = parse_pose(param)[1][0]
-      this_param = param * param_std + param_mean
-      this_param = np.concatenate((this_param, roi_box))
-      
-      
-      return this_param, pts_2d_5, img_ori, pose
+    pose = parse_pose(param)[1][0]
+    this_param = param * param_std + param_mean
+    this_param = np.concatenate((this_param, roi_box))
+
+
+    return this_param, pts_2d_5, img_orig, pose
 
