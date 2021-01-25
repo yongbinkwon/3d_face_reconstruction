@@ -31,23 +31,13 @@ class AllFaceDataset(BaseDataset):
 
     def initialize(self, opt):
         self.opt = opt
+
         dataset_num = dataset_info.get_dataset(opt)
         
         self.prefix = [dataset_info.prefix[num] for num in dataset_num]
 
-        file_list = [dataset_info.file_list[num] for num in dataset_num]
-
-        land_mark_list = [dataset_info.land_mark_list[num] for num in dataset_num]
-
-        self.folder_level = [dataset_info.folder_level[num] for num in dataset_num]
-
 
         self.num_datasets = len(file_list)
-        assert len(land_mark_list) == self.num_datasets, \
-        'num of landmk dir should be the num of datasets'
-
-        assert len(self.params_dir) == self.num_datasets, \
-        'num of params_dir should be the num of datasets'
 
         self.dataset_lists = []
         self.landmark_paths = []
@@ -85,16 +75,6 @@ class AllFaceDataset(BaseDataset):
         landmarks = list(map(float, landmarks))
         landmarks_array = np.array(landmarks).reshape(5, 2)
         return landmarks_array, label
-
-    def get_param_file(self, img_list, dataset_num):
-        img_name = os.path.splitext(img_list)[0]
-        name_split = img_name.split("/")
-
-        folder_level = self.folder_level[dataset_num]
-        param_folder = os.path.join(self.params_dir[dataset_num],
-                                    "/".join([name_split[i] for i in range(len(name_split) - folder_level, len(name_split))]) + ".txt")
-        #     params = np.loadtxt(param_folder)
-        return param_folder
 
     def paths_match(self, path1, path2):
         filename1_without_ext = os.path.splitext(os.path.basename(path1)[-10:])[0]
