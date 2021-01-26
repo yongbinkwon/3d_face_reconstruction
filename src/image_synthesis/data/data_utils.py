@@ -1,8 +1,5 @@
 import torch
 
-
-
-
 def get_input(image, M, render, yaw_pose, param):
     real_image = image
     rotated_meshs = []

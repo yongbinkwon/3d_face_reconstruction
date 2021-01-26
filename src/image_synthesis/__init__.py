@@ -12,12 +12,6 @@ from .data.data_utils import get_input
 from .model_fitting.model_fitting import load_3ddfa, get_param
 
 
-def create_path(a_path, b_path):
-    name_id_path = os.path.join(a_path, b_path)
-    if not os.path.exists(name_id_path):
-        os.makedirs(name_id_path)
-    return name_id_path
-
 def rotate_yaw_pose(yaw_pose):
     abs_yaw_pose = abs(yaw_pose)
     if abs_yaw_pose <= np.pi/4:
@@ -28,19 +22,6 @@ def rotate_yaw_pose(yaw_pose):
         print("too large pose")
         return yaw_pose
     return np.sign(yaw_pose)*abs_yaw_pose
-
-
-def create_paths(save_path, img_path, foldername='orig', folderlevel=2, pose='0'):
-    save_rotated_path_name = create_path(save_path, foldername)
-
-    path_split = img_path.split('/')
-    rotated_file_savepath = save_rotated_path_name
-    for level in range(len(path_split) - folderlevel, len(path_split)):
-        file_name = path_split[level]
-        if level == len(path_split) - 1:
-            file_name = str(pose) + '_' + file_name
-        rotated_file_savepath = os.path.join(rotated_file_savepath, file_name)
-    return rotated_file_savepath
 
 
 def save_img(img, save_path):

@@ -15,7 +15,7 @@ def parse_pose(param):
     Ps = param[:12].reshape(3, -1)  # camera matrix
     # R = P[:, :3]
     s, R, t3d = P2sRt(Ps)
-    R.tofile('pose.txt', sep=' ')
+    #R.tofile('pose.txt', sep=' ')
     P = np.concatenate((R, t3d.reshape(3, -1)), axis=1)  # without scale
     # P = Ps / s
     pose = matrix2angle(R)  # yaw, pitch, roll
