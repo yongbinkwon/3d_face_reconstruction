@@ -1,14 +1,14 @@
 import torch
-from models.networks.base_network import BaseNetwork
-from models.networks.generator import *
-from models.networks.encoder import *
-from models.networks.render import Render
-import util.util as util
+from .base_network import BaseNetwork
+from .generator import *
+from .encoder import *
+from .render import Render
+from ...util import util
 
 
 def find_network_using_name(target_network_name, filename):
     target_class_name = target_network_name + filename
-    module_name = 'models.networks.' + filename
+    module_name = 'image_synthesis.models.networks.' + filename
     network = util.find_class_in_module(target_class_name, module_name)
 
     assert issubclass(network, BaseNetwork), \

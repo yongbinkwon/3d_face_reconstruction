@@ -2,12 +2,11 @@ import sys
 import argparse
 import math
 import os
-from util import util
+from ..util import util
 import torch
-import models
-import data
+from ..models import get_option_setter as get_modelOption_setter
 import pickle
-from model_fitting.utils.ddfa import str2bool
+from ..model_fitting.utils.ddfa import str2bool
 
 
 class BaseOptions():
@@ -16,10 +15,10 @@ class BaseOptions():
 
     def initialize(self, parser):
         # experiment specifics
-        parser.add_argument('--name', type=str, default='mesh2face', help='name of the experiment. It decides where to store samples and models')
+        parser.add_argument('--name', type=str, default='rotate_synthesis', help='name of the experiment. It decides where to store samples and models')
 
         parser.add_argument('--gpu_ids', type=str, default='0', help='useless')
-        parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
+        parser.add_argument('--checkpoints_dir', type=str, default='image_synthesis/checkpoints', help='models are saved here')
         parser.add_argument('--model', type=str, default='rotate', help='which model to use, rotate|rotatespade')
         parser.add_argument('--trainer', type=str, default='rotate', help='which trainer to use, rotate|rotatespade')
         parser.add_argument('--norm_G', type=str, default='spectralinstance', help='instance normalization or batch normalization')
@@ -40,8 +39,6 @@ class BaseOptions():
         parser.add_argument('--output_nc', type=int, default=3, help='# of output image channels')
 
         # for setting inputs
-        parser.add_argument('--dataset', type=str, default='ms1m,casia', help='dataset')
-        parser.add_argument('--dataset_mode', type=str, default='allface')
         parser.add_argument('--landmark_align', action='store_true', help='wether there is landmark_align')
         parser.add_argument('--serial_batches', action='store_true', help='if true, takes images in order to make batches, otherwise takes them randomly')
         parser.add_argument('--no_flip', action='store_true', help='if specified, do not flip the images for data argumentation')
@@ -77,9 +74,9 @@ class BaseOptions():
         parser.add_argument('--dump_param', default='true', type=str2bool, help='whether to save param')
         parser.add_argument('--dump_lmk', default='true', type=str2bool, help='whether to save landmarks')
         parser.add_argument('--save_dir', default='results', type=str, help='dir to save result')
-        parser.add_argument('--save_lmk_dir', default='model_fitting/example', type=str, help='dir to save landmark result')
-        parser.add_argument('--img_list', default='model_fitting/example/file_list.txt', type=str, help='test image list file')
-        parser.add_argument('--img_prefix', default='model_fitting/example/Images', type=str, help='test image prefix')
+        parser.add_argument('--save_lmk_dir', default='image_synthesis/model_fitting/example', type=str, help='dir to save landmark result')
+        parser.add_argument('--img_list', default='image_synthesis/model_fitting/example/file_list.txt', type=str, help='test image list file')
+        parser.add_argument('--img_prefix', default='image_synthesis/model_fitting/example/Images', type=str, help='test image prefix')
         parser.add_argument('--rank', default=0, type=int, help='used when parallel run')
         parser.add_argument('--world_size', default=1, type=int, help='used when parallel run')
         parser.add_argument('--resume_idx', default=0, type=int)
@@ -99,13 +96,15 @@ class BaseOptions():
 
         # modify model-related parser options
         model_name = opt.model
-        model_option_setter = models.get_option_setter(model_name)
+        model_option_setter = get_modelOption_setter(model_name)
         parser = model_option_setter(parser)
 
+        """
         # modify dataset-related parser options
         dataset_mode = opt.dataset_mode
-        dataset_option_setter = data.get_option_setter(dataset_mode)
+        dataset_option_setter = get_dataOption_setter(dataset_mode)
         parser = dataset_option_setter(parser)
+        """
 
         opt, unknown = parser.parse_known_args()
 

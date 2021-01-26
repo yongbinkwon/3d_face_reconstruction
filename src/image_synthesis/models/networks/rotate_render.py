@@ -1,4 +1,4 @@
-from models.networks.render import *
+from .render import *
 
 
 def _get_suffix(filename):

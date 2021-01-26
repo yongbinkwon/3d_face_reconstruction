@@ -5,14 +5,13 @@ from .base_options import BaseOptions
 class TestOptions(BaseOptions):
     def initialize(self, parser):
         BaseOptions.initialize(self, parser)
-        parser.add_argument('--results_dir', type=str, default='./results/', help='saves results here.')
         parser.add_argument('--list_num', type=int, default=0, help='list num')
+        parser.add_argument('--dataset_name', type=str, default='300W-LP', help='dataset used')
         parser.add_argument('--which_epoch', type=str, default='latest', help='which epoch to load? set to latest to use latest cached model')
         parser.add_argument('--how_many', type=int, default=float("inf"), help='how many test images to run')
         parser.add_argument('--list_start', type=int, default=0, help='which num in the list to start')
         parser.add_argument('--list_end', type=int, default=float("inf"), help='how many test images to run')
-        parser.add_argument('--save_path', type=str, default='./results/', help='where to save data')
-        parser.add_argument('--names', type=str, default='rs_ijba3', help='dataset')
+        parser.add_argument('--save_path', type=str, default='image_synthesis/results/', help='where to save data')
         parser.add_argument('--multi_gpu', action='store_true', help='whether to use multi gpus')
         parser.add_argument('--align', action='store_true', help='whether to save align')
         parser.add_argument('--yaw_poses', type=float, default=None, nargs='+', help='yaw poses list during testing')

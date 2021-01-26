@@ -14,29 +14,20 @@ import torch
 import torchvision.transforms as transforms
 import numpy as np
 import cv2
-import os
-import math
-from tqdm import tqdm
-import time
 import face_alignment
+import torch.backends.cudnn as cudnn
 from .utils.ddfa import ToTensorGjz, NormalizeGjz
-import scipy.io as sio
-from .utils.inference import get_suffix, parse_roi_box_from_landmark, crop_img, predict_68pts, dump_to_ply, dump_vertex, \
-    predict_dense, parse_roi_box_from_bbox, get_colors, write_obj_with_colors, get_aligned_param, get_5lmk_from_68lmk
+from .utils.inference import parse_roi_box_from_landmark, crop_img, predict_68pts, get_5lmk_from_68lmk
 from .utils.estimate_pose import parse_pose
 from .utils.params import param_mean, param_std
-from .utils.render import get_depths_image, cget_depths_image, cpncc, crender_colors
-from .utils.paf import gen_img_paf
-import model_fitting.mobilenet_v1 as mobilenet_v1
-import torch.backends.cudnn as cudnn
-import glob
+from . import mobilenet_v1
 
 STD_SIZE = 120
 
 
 def load_3ddfa(args):
     # 1. load pre-trained model
-    checkpoint_fp = 'model_fitting/models/phase1_wpdc_vdc.pth.tar'
+    checkpoint_fp = 'image_synthesis/model_fitting/models/phase1_wpdc_vdc.pth.tar'
     arch = 'mobilenet_1'
 
     checkpoint = torch.load(checkpoint_fp, map_location=lambda storage, loc: storage)['state_dict']
