@@ -17,3 +17,4 @@ model_fitting/train.configs
 model_fitting/models
 sftp-config.json
 .env
+*.jpg
