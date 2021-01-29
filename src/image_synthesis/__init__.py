@@ -24,17 +24,10 @@ def rotate_yaw_pose(yaw_pose):
     return np.sign(yaw_pose)*abs_yaw_pose
 
 
-def save_img(img, save_path):
-    image_numpy = util.tensor2im(img)
-    util.save_image(image_numpy, save_path, create_dir=True)
-    return image_numpy
-
-
 class Synthesize():
 
     def __init__(self):
         self.opt = TestOptions().parse()
-
         self.ngpus = self.opt.device_count
 
         self.render_gpu_ids = list(range(self.ngpus - self.opt.render_thread, self.ngpus))
@@ -98,10 +91,13 @@ class Synthesize():
         data = get_input(wrapped_img, M, self.render_layer_list[0], rotated_yaw_pose, param)
 
         rotated_image = self.model.forward(data, mode='single')
+        return_image = util.tensor2im(rotated_image[0])
 
-        rotated_image_savepath = os.path.join(self.save_path, img_fp_suffix)
-        save_img(rotated_image[0], rotated_image_savepath)
-        print("DOOOOONE")
+        if self.opt.save_image:
+            rotated_image_savepath = os.path.join(self.save_path, img_fp_suffix)
+            util.save_image(return_image, rotated_image_savepath, create_dir=True)
+        
+        return return_image
 
 
 

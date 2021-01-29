@@ -1,13 +1,12 @@
-__pycache__
+*__pycache__*
 checkpoints/
 .ipynb_checkpoints
-.idea/
+.idea
 *.tar.gz
 *.zip
 *.pkl
 *.pyc
 *.pth
-*.png
 *.tar
 ***.npy
 *.npy
@@ -18,3 +17,11 @@ model_fitting/models
 sftp-config.json
 .env
 *.jpg
+icp/
+face3d/
+*.h5
+*.dat
+*.PNG
+*.png
+*.jpeg
+*.obj

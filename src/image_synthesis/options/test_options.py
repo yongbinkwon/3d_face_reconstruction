@@ -17,6 +17,7 @@ class TestOptions(BaseOptions):
         parser.add_argument('--yaw_poses', type=float, default=None, nargs='+', help='yaw poses list during testing')
         parser.add_argument('--pitch_poses', type=float, default=None, nargs='+', help='pitch poses list during testing')
         parser.add_argument('--posesrandom', action='store_true', help='whether to random the poses')
+        parser.add_argument('--save_image', action='store_true', help='save image or not')
 
 
         parser.set_defaults(preprocess_mode='scale_width_and_crop', crop_size=256, load_size=256, display_winsize=256)
