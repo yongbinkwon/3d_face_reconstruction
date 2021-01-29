@@ -139,10 +139,10 @@ def main():
         face_imgs.append([front_img, side_img])
 
     for images in face_imgs:
+        print(images[0])
         front_img = imread(images[0])[:, :, :3]
-        side_img = synthesizer.synthesize_image(images[0].split("/")[-1])
-        cv2.imwrite("front.jpg", front_img)
-        cv2.imwrite("side,jpg", side_img)
+        side_img = synthesizer.synthesize_image(images[0])[:, :, :3]
+        #side_img = imread(images[1])[:, :, :3]
 
         if front_img.shape != (256, 256, 3):
             max_size = max(front_img.shape[0], front_img.shape[1])

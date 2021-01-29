@@ -73,8 +73,7 @@ class Synthesize():
         warped = cv2.warpAffine(img, M, (self.opt.crop_size, self.opt.crop_size), borderValue=0.0)
         return warped, M
 
-    def synthesize_image(self, img_fp_suffix):
-        img_fp = os.path.join(self.opt.img_prefix, img_fp_suffix)
+    def synthesize_image(self, img_fp):
         param, landmarks, img_orig, yaw_pose = get_param(
             self.fitting_model, self.alignment_model, img_fp, self.opt
         )
@@ -94,7 +93,7 @@ class Synthesize():
         return_image = util.tensor2im(rotated_image[0])
 
         if self.opt.save_image:
-            rotated_image_savepath = os.path.join(self.save_path, img_fp_suffix)
+            rotated_image_savepath = os.path.join(self.save_path, img_fp.split("/")[-1])
             util.save_image(return_image, rotated_image_savepath, create_dir=True)
         
         return return_image
