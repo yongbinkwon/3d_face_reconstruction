@@ -1,0 +1,863 @@
+TensorFlow 2.0 Upgrade Script
+-----------------------------
+Converted 96 files
+Detected 12 issues that require attention
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+File: src/image_synthesis/model_fitting/utils/io.py
+--------------------------------------------------------------------------------
+src/image_synthesis/model_fitting/utils/io.py:36:8: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+File: src/image_synthesis/models/networks/util.py
+--------------------------------------------------------------------------------
+src/image_synthesis/models/networks/util.py:133:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+File: src/image_synthesis/util/util.py
+--------------------------------------------------------------------------------
+src/image_synthesis/util/util.py:103:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+src/image_synthesis/util/util.py:164:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+File: src/Dataset/dataset_generator/facegen_to_posmap.py
+--------------------------------------------------------------------------------
+src/Dataset/dataset_generator/facegen_to_posmap.py:244:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+src/Dataset/dataset_generator/facegen_to_posmap.py:297:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+File: src/Dataset/dataset_generator/pos_map_code.py
+--------------------------------------------------------------------------------
+src/Dataset/dataset_generator/pos_map_code.py:82:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+File: src/Dataset/dataset_generator/pos_validator.py
+--------------------------------------------------------------------------------
+src/Dataset/dataset_generator/pos_validator.py:271:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+File: src/face3d/examples/7_generate_uv_map.py
+--------------------------------------------------------------------------------
+src/face3d/examples/7_generate_uv_map.py:66:0: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+File: src/face3d/examples/8_generate_posmap_300WLP.py
+--------------------------------------------------------------------------------
+src/face3d/examples/8_generate_posmap_300WLP.py:82:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+File: src/Training/train_keras.py
+--------------------------------------------------------------------------------
+src/Training/train_keras.py:111:12: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+File: src/Training/train_tf.py
+--------------------------------------------------------------------------------
+src/Training/train_tf.py:60:8: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+================================================================================
+Detailed log follows:
+
+================================================================================
+================================================================================
+Input tree: 'src/'
+================================================================================
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis_test.py'
+ outputting to 'src/image_synthesis_test.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/demo.py'
+ outputting to 'src/demo.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/__init__.py'
+ outputting to 'src/image_synthesis/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/data/data_utils.py'
+ outputting to 'src/image_synthesis/data/data_utils.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/data/curve.py'
+ outputting to 'src/image_synthesis/data/curve.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/main.py'
+ outputting to 'src/image_synthesis/model_fitting/main.py'
+--------------------------------------------------------------------------------
+
+ERROR: Failed to parse.
+Traceback (most recent call last):
+  File "/home/shomeb/y/yongbk/.local/lib/python3.6/site-packages/tensorflow/tools/compatibility/ast_edits.py", line 940, in update_string_pasta
+    t = pasta.parse(text)
+  File "/home/shomeb/y/yongbk/.local/lib/python3.6/site-packages/pasta/__init__.py", line 23, in parse
+    t = ast_utils.parse(src)
+  File "/home/shomeb/y/yongbk/.local/lib/python3.6/site-packages/pasta/base/ast_utils.py", line 56, in parse
+    tree = ast.parse(sanitize_source(src))
+  File "/usr/lib/python3.6/ast.py", line 35, in parse
+    return compile(source, filename, mode, PyCF_ONLY_AST)
+  File "<unknown>", line 186
+    if __name__ == '__main__':
+                             ^
+IndentationError: expected an indented block
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/mobilenet_v1.py'
+ outputting to 'src/image_synthesis/model_fitting/mobilenet_v1.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/model_fitting.py'
+ outputting to 'src/image_synthesis/model_fitting/model_fitting.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/simple_dataset.py'
+ outputting to 'src/image_synthesis/model_fitting/simple_dataset.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/test.py'
+ outputting to 'src/image_synthesis/model_fitting/test.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/utils/__init__.py'
+ outputting to 'src/image_synthesis/model_fitting/utils/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/utils/cv_plot.py'
+ outputting to 'src/image_synthesis/model_fitting/utils/cv_plot.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/utils/ddfa.py'
+ outputting to 'src/image_synthesis/model_fitting/utils/ddfa.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/utils/estimate_pose.py'
+ outputting to 'src/image_synthesis/model_fitting/utils/estimate_pose.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/utils/inference.py'
+ outputting to 'src/image_synthesis/model_fitting/utils/inference.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/utils/io.py'
+ outputting to 'src/image_synthesis/model_fitting/utils/io.py'
+--------------------------------------------------------------------------------
+
+36:8: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/utils/lighting.py'
+ outputting to 'src/image_synthesis/model_fitting/utils/lighting.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/utils/paf.py'
+ outputting to 'src/image_synthesis/model_fitting/utils/paf.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/utils/params.py'
+ outputting to 'src/image_synthesis/model_fitting/utils/params.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/utils/render.py'
+ outputting to 'src/image_synthesis/model_fitting/utils/render.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/utils/cython/__init__.py'
+ outputting to 'src/image_synthesis/model_fitting/utils/cython/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/model_fitting/utils/cython/setup.py'
+ outputting to 'src/image_synthesis/model_fitting/utils/cython/setup.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/__init__.py'
+ outputting to 'src/image_synthesis/models/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/rotatespade_model.py'
+ outputting to 'src/image_synthesis/models/rotatespade_model.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/test_model.py'
+ outputting to 'src/image_synthesis/models/test_model.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/__init__.py'
+ outputting to 'src/image_synthesis/models/networks/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/architecture.py'
+ outputting to 'src/image_synthesis/models/networks/architecture.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/base_network.py'
+ outputting to 'src/image_synthesis/models/networks/base_network.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/encoder.py'
+ outputting to 'src/image_synthesis/models/networks/encoder.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/generator.py'
+ outputting to 'src/image_synthesis/models/networks/generator.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/normalization.py'
+ outputting to 'src/image_synthesis/models/networks/normalization.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/render.py'
+ outputting to 'src/image_synthesis/models/networks/render.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/rotate_render.py'
+ outputting to 'src/image_synthesis/models/networks/rotate_render.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/util.py'
+ outputting to 'src/image_synthesis/models/networks/util.py'
+--------------------------------------------------------------------------------
+
+133:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/sync_batchnorm/__init__.py'
+ outputting to 'src/image_synthesis/models/networks/sync_batchnorm/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/sync_batchnorm/batchnorm.py'
+ outputting to 'src/image_synthesis/models/networks/sync_batchnorm/batchnorm.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/sync_batchnorm/batchnorm_reimpl.py'
+ outputting to 'src/image_synthesis/models/networks/sync_batchnorm/batchnorm_reimpl.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/sync_batchnorm/comm.py'
+ outputting to 'src/image_synthesis/models/networks/sync_batchnorm/comm.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/sync_batchnorm/replicate.py'
+ outputting to 'src/image_synthesis/models/networks/sync_batchnorm/replicate.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/sync_batchnorm/scatter_gather.py'
+ outputting to 'src/image_synthesis/models/networks/sync_batchnorm/scatter_gather.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/models/networks/sync_batchnorm/unittest.py'
+ outputting to 'src/image_synthesis/models/networks/sync_batchnorm/unittest.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/options/__init__.py'
+ outputting to 'src/image_synthesis/options/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/options/base_options.py'
+ outputting to 'src/image_synthesis/options/base_options.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/options/test_options.py'
+ outputting to 'src/image_synthesis/options/test_options.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/util/__init__.py'
+ outputting to 'src/image_synthesis/util/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/image_synthesis/util/util.py'
+ outputting to 'src/image_synthesis/util/util.py'
+--------------------------------------------------------------------------------
+
+103:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+164:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Dataset/dataset_generator/facegen_to_posmap.py'
+ outputting to 'src/Dataset/dataset_generator/facegen_to_posmap.py'
+--------------------------------------------------------------------------------
+
+244:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+297:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Dataset/dataset_generator/generate_dataset.py'
+ outputting to 'src/Dataset/dataset_generator/generate_dataset.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Dataset/dataset_generator/pos_map_code.py'
+ outputting to 'src/Dataset/dataset_generator/pos_map_code.py'
+--------------------------------------------------------------------------------
+
+82:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Dataset/dataset_generator/pos_validator.py'
+ outputting to 'src/Dataset/dataset_generator/pos_validator.py'
+--------------------------------------------------------------------------------
+
+271:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Dataset/dataset_reader/DatasetReader.py'
+ outputting to 'src/Dataset/dataset_reader/DatasetReader.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Dataset/dataset_reader/Face.py'
+ outputting to 'src/Dataset/dataset_reader/Face.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Evaluation/evaluate_predicitons.py'
+ outputting to 'src/Evaluation/evaluate_predicitons.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/examples/1_pipeline.py'
+ outputting to 'src/face3d/examples/1_pipeline.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/examples/2_3dmm.py'
+ outputting to 'src/face3d/examples/2_3dmm.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/examples/3_transform.py'
+ outputting to 'src/face3d/examples/3_transform.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/examples/4_light.py'
+ outputting to 'src/face3d/examples/4_light.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/examples/5_render.py'
+ outputting to 'src/face3d/examples/5_render.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/examples/6_generate_image_map.py'
+ outputting to 'src/face3d/examples/6_generate_image_map.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/examples/7_generate_uv_map.py'
+ outputting to 'src/face3d/examples/7_generate_uv_map.py'
+--------------------------------------------------------------------------------
+
+66:0: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/examples/8_generate_posmap_300WLP.py'
+ outputting to 'src/face3d/examples/8_generate_posmap_300WLP.py'
+--------------------------------------------------------------------------------
+
+82:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/__init__.py'
+ outputting to 'src/face3d/face3d/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh/__init__.py'
+ outputting to 'src/face3d/face3d/mesh/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh/io.py'
+ outputting to 'src/face3d/face3d/mesh/io.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh/light.py'
+ outputting to 'src/face3d/face3d/mesh/light.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh/render.py'
+ outputting to 'src/face3d/face3d/mesh/render.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh/transform.py'
+ outputting to 'src/face3d/face3d/mesh/transform.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh/vis.py'
+ outputting to 'src/face3d/face3d/mesh/vis.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh/cython/setup.py'
+ outputting to 'src/face3d/face3d/mesh/cython/setup.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh_numpy/__init__.py'
+ outputting to 'src/face3d/face3d/mesh_numpy/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh_numpy/io.py'
+ outputting to 'src/face3d/face3d/mesh_numpy/io.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh_numpy/light.py'
+ outputting to 'src/face3d/face3d/mesh_numpy/light.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh_numpy/render.py'
+ outputting to 'src/face3d/face3d/mesh_numpy/render.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh_numpy/transform.py'
+ outputting to 'src/face3d/face3d/mesh_numpy/transform.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/mesh_numpy/vis.py'
+ outputting to 'src/face3d/face3d/mesh_numpy/vis.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/morphable_model/__init__.py'
+ outputting to 'src/face3d/face3d/morphable_model/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/morphable_model/fit.py'
+ outputting to 'src/face3d/face3d/morphable_model/fit.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/morphable_model/load.py'
+ outputting to 'src/face3d/face3d/morphable_model/load.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/face3d/face3d/morphable_model/morphabel_model.py'
+ outputting to 'src/face3d/face3d/morphable_model/morphabel_model.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/icp/icp.py'
+ outputting to 'src/icp/icp.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/icp/test.py'
+ outputting to 'src/icp/test.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Networks/mobilenet_v2.py'
+ outputting to 'src/Networks/mobilenet_v2.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Networks/predictor.py'
+ outputting to 'src/Networks/predictor.py'
+--------------------------------------------------------------------------------
+
+23:17: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+25:20: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+25:38: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+25:65: INFO: Renamed 'tf.GPUOptions' to 'tf.compat.v1.GPUOptions'
+28:8: INFO: Renamed 'tf.train.Saver' to 'tf.compat.v1.train.Saver'
+51:17: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+53:15: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+80:17: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+82:15: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Networks/resfcn256_6.py'
+ outputting to 'src/Networks/resfcn256_6.py'
+--------------------------------------------------------------------------------
+
+9:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+32:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+77:31: INFO: Renamed 'tf.global_variables' to 'tf.compat.v1.global_variables'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Networks/resfcn256_keras.py'
+ outputting to 'src/Networks/resfcn256_keras.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Plot/plot_ced.py'
+ outputting to 'src/Plot/plot_ced.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Plot/plot_loss.py'
+ outputting to 'src/Plot/plot_loss.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Training/TrainData.py'
+ outputting to 'src/Training/TrainData.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Training/train_keras.py'
+ outputting to 'src/Training/train_keras.py'
+--------------------------------------------------------------------------------
+
+31:13: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+33:11: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+111:12: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Training/train_tf.py'
+ outputting to 'src/Training/train_tf.py'
+--------------------------------------------------------------------------------
+
+28:8: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+29:12: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+34:11: INFO: tf.losses.mean_squared_error requires manual check. tf.losses have been replaced with object oriented versions in TF 2.0 and after. The loss function calls have been converted to compat.v1 for backward compatibility. Please update these calls to the TF 2.0 versions.
+34:11: INFO: Renamed 'tf.losses.mean_squared_error' to 'tf.compat.v1.losses.mean_squared_error'
+36:17: INFO: Renamed 'tf.get_collection' to 'tf.compat.v1.get_collection'
+36:35: INFO: Renamed 'tf.GraphKeys' to 'tf.compat.v1.GraphKeys'
+38:31: INFO: Renamed 'tf.train.AdamOptimizer' to 'tf.compat.v1.train.AdamOptimizer'
+40:11: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+40:29: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+40:56: INFO: Renamed 'tf.GPUOptions' to 'tf.compat.v1.GPUOptions'
+41:13: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+43:12: INFO: Renamed 'tf.train.Saver' to 'tf.compat.v1.train.Saver'
+43:36: INFO: Renamed 'tf.global_variables' to 'tf.compat.v1.global_variables'
+60:8: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Utils/cv_plot.py'
+ outputting to 'src/Utils/cv_plot.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Utils/estimate_pose.py'
+ outputting to 'src/Utils/estimate_pose.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Utils/render.py'
+ outputting to 'src/Utils/render.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Utils/render_app.py'
+ outputting to 'src/Utils/render_app.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Utils/rotate_vertices.py'
+ outputting to 'src/Utils/rotate_vertices.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'src/Utils/write.py'
+ outputting to 'src/Utils/write.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+

@@ -28,9 +28,9 @@ def main(args):
     resume_model = args.resume_model
 
     # set tensorflow session GPU usage
-    config = tf.ConfigProto()
+    config = tf.compat.v1.ConfigProto()
     config.gpu_options.allow_growth = True
-    sess = tf.Session(config=config)
+    sess = tf.compat.v1.Session(config=config)
     set_session(sess)
 
     # set model saving dir

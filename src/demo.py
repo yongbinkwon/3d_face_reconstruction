@@ -9,6 +9,9 @@ from skimage.transform import rescale, estimate_transform, warp
 from Networks.predictor import MobilenetPosPredictor
 from Utils.write import write_obj_with_colors
 from image_synthesis import Synthesize
+from tqdm import tqdm
+
+import tensorflow as tf
 
 
 def mask_pos(pos):
@@ -59,8 +62,8 @@ def plot_vertices_on_image_from_pos(pos, l68, front_img):
 
 
 # from PRNet code
-def get_cropping_transformation(image, face_detector, shape_predictor):
-    detected_faces = face_detector(image, 1)
+def get_cropping_transformation(image, face_detector):
+    detected_faces = face_detector(image, 0)
     if len(detected_faces) == 0:
         print('warning: no detected face')
         return None
@@ -75,16 +78,18 @@ def get_cropping_transformation(image, face_detector, shape_predictor):
     center = np.array([right - (right - left) / 2.0, bottom - (bottom - top) / 2.0 + old_size * 0.14])
     size = int(old_size * 1.58)
 
+    """
     shape = shape_predictor(image, d)
     coords = np.zeros((68, 2), dtype=int)
     for i in range(0, 68):
         coords[i] = (shape.part(i).x, shape.part(i).y)
+    """
 
     src_pts = np.array([[center[0] - size / 2, center[1] - size / 2], [center[0] - size / 2, center[1] + size / 2],
                         [center[0] + size / 2, center[1] - size / 2]])
     DST_PTS = np.array([[0, 0], [0, 255], [255, 0]])
     tform = estimate_transform('similarity', src_pts, DST_PTS)
-    return coords, tform
+    return tform
 
 
 def uncrop_pos(cropped_pos, cropping_tform):
@@ -108,19 +113,19 @@ def get_cropped_image(img, cropping_tform):
 def main():
     model_path = 'Data/net-data/trained_fg_then_real.h5'  # trained_fg_then_real.h5'
     face_detector_path = 'Data/net-data/mmod_human_face_detector.dat'
-    shape_predictor_path = 'Data/net-data/shape_predictor_68_face_landmarks.dat'
+    #shape_predictor_path = 'Data/net-data/shape_predictor_68_face_landmarks.dat'
     image_folder = 'test_images/'
     # image_folder = 'Data/florence_objs_with_img'
     img_type = '.jpg'  # .png #
 
     synthesizer = Synthesize()
 
-    triangles = np.loadtxt('Data/uv-data/triangles.txt').astype(np.int32)
+    #triangles = np.loadtxt('Data/uv-data/triangles.txt').astype(np.int32)
     face_ind = np.loadtxt('Data/uv-data/face_ind.txt').astype(np.int32)
-    extra_face_ind = np.loadtxt('Data/uv-data/extra_bfm_ind.txt').astype(np.int32)
-    bfm_kpt_ind = np.loadtxt('Data/uv-data/bfm_kpt_ind.txt').astype(np.int32)
+    #extra_face_ind = np.loadtxt('Data/uv-data/extra_bfm_ind.txt').astype(np.int32)
+    #bfm_kpt_ind = np.loadtxt('Data/uv-data/bfm_kpt_ind.txt').astype(np.int32)
     face_detector = dlib.cnn_face_detection_model_v1(face_detector_path)
-    shape_predictor = dlib.shape_predictor(shape_predictor_path)
+    #shape_predictor = dlib.shape_predictor(shape_predictor_path)
 
     pos_predictor = MobilenetPosPredictor(256, 256)
     mobilenet_pos_predictor = os.path.join('', model_path)  # Data/net-data/keras_mobilenet_prn_20_epochs_097.h5')
@@ -138,8 +143,8 @@ def main():
         side_img = os.path.join(image_folder, face_folder, 'side' + img_type)  # 'side.jpg')#face_folder + '_left.png')
         face_imgs.append([front_img, side_img])
 
-    for images in face_imgs:
-        print(images[0])
+    for images in tqdm(face_imgs):
+        print(images)
         front_img = imread(images[0])[:, :, :3]
         side_img = synthesizer.synthesize_image(images[0])[:, :, :3]
         #side_img = imread(images[1])[:, :, :3]
@@ -158,8 +163,8 @@ def main():
                 side_img = (side_img * 255).astype(np.uint8)
             side_img = np.around(side_img, decimals=1).astype(np.uint8)
 
-        l68_front, cropping_tform_front = get_cropping_transformation(front_img, face_detector, shape_predictor)
-        l68_side, cropping_tform_side = get_cropping_transformation(side_img, face_detector, shape_predictor)
+        cropping_tform_front = get_cropping_transformation(front_img, face_detector)
+        cropping_tform_side = get_cropping_transformation(side_img, face_detector)
 
         cropped_image_front = get_cropped_image(front_img, cropping_tform_front)
         cropped_image_side = get_cropped_image(side_img, cropping_tform_side)
@@ -182,11 +187,13 @@ def main():
         ind = np.round(vertices).astype(np.int32)
         colors = front_img[ind[:, 1], ind[:, 0], :]  # n x 3
 
+        
         write_obj_with_colors(images[0].replace(img_type, '.obj'), save_vertices, triangles, colors)
 
         masked_pos = mask_pos(pos)
         plotted_image = plot_vertices_on_image_from_pos(masked_pos, l68_front, front_img)
         imsave(images[0].replace('front', 'projected'), plotted_image)
+        
 
 
 if __name__ == '__main__':

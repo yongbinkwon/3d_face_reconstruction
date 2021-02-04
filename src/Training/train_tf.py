@@ -25,22 +25,22 @@ def main(args):
 
     data = TrainData(train_data_file)
 
-    x = tf.placeholder(tf.float32, shape=[None, 256, 256, 6])
-    label = tf.placeholder(tf.float32, shape=[None, 256, 256, 3])
+    x = tf.compat.v1.placeholder(tf.float32, shape=[None, 256, 256, 6])
+    label = tf.compat.v1.placeholder(tf.float32, shape=[None, 256, 256, 3])
 
     net = resfcn256_6(256, 256)
     x_op = net(x, is_training=True)
 
-    loss = tf.losses.mean_squared_error(label, x_op)  # , weights=data.weight_mask)
+    loss = tf.compat.v1.losses.mean_squared_error(label, x_op)  # , weights=data.weight_mask)
 
-    update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+    update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
     with tf.control_dependencies(update_ops):
-        train_step_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
+        train_step_optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 
-    sess = tf.Session(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True)))
-    sess.run(tf.global_variables_initializer())
+    sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=tf.compat.v1.GPUOptions(allow_growth=True)))
+    sess.run(tf.compat.v1.global_variables_initializer())
 
-    saver = tf.train.Saver(var_list=tf.global_variables())
+    saver = tf.compat.v1.train.Saver(var_list=tf.compat.v1.global_variables())
     save_path = model_path
 
     # Begining train
