@@ -86,10 +86,10 @@ def get_param(model, alignment_model, img_fp, args):
             param = model(input)
             param = param.squeeze().cpu().numpy().flatten().astype(np.float32)
 
-    pose = parse_pose(param)[1][0]
+    poses = parse_pose(param)[1]
     this_param = param * param_std + param_mean
     this_param = np.concatenate((this_param, roi_box))
 
 
-    return this_param, pts_2d_5, img_orig, pose
+    return this_param, pts_2d_5, img_orig, poses
 

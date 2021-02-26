@@ -62,7 +62,7 @@ def plot_vertices_on_image_from_pos(pos, l68, front_img):
 
 
 # from PRNet code
-def get_cropping_transformation(image, face_detector):
+def get_cropping_transformation(image, face_detector, shape_predictor):
     detected_faces = face_detector(image, 0)
     if len(detected_faces) == 0:
         print('warning: no detected face')
@@ -78,18 +78,17 @@ def get_cropping_transformation(image, face_detector):
     center = np.array([right - (right - left) / 2.0, bottom - (bottom - top) / 2.0 + old_size * 0.14])
     size = int(old_size * 1.58)
 
-    """
+    
     shape = shape_predictor(image, d)
     coords = np.zeros((68, 2), dtype=int)
     for i in range(0, 68):
         coords[i] = (shape.part(i).x, shape.part(i).y)
-    """
 
     src_pts = np.array([[center[0] - size / 2, center[1] - size / 2], [center[0] - size / 2, center[1] + size / 2],
                         [center[0] + size / 2, center[1] - size / 2]])
     DST_PTS = np.array([[0, 0], [0, 255], [255, 0]])
     tform = estimate_transform('similarity', src_pts, DST_PTS)
-    return tform
+    return coords, tform
 
 
 def uncrop_pos(cropped_pos, cropping_tform):
@@ -113,19 +112,19 @@ def get_cropped_image(img, cropping_tform):
 def main():
     model_path = 'Data/net-data/trained_fg_then_real.h5'  # trained_fg_then_real.h5'
     face_detector_path = 'Data/net-data/mmod_human_face_detector.dat'
-    #shape_predictor_path = 'Data/net-data/shape_predictor_68_face_landmarks.dat'
+    shape_predictor_path = 'Data/net-data/shape_predictor_68_face_landmarks.dat'
     image_folder = 'test_images/'
     # image_folder = 'Data/florence_objs_with_img'
     img_type = '.jpg'  # .png #
 
     synthesizer = Synthesize()
 
-    #triangles = np.loadtxt('Data/uv-data/triangles.txt').astype(np.int32)
+    triangles = np.loadtxt('Data/uv-data/triangles.txt').astype(np.int32)
     face_ind = np.loadtxt('Data/uv-data/face_ind.txt').astype(np.int32)
     #extra_face_ind = np.loadtxt('Data/uv-data/extra_bfm_ind.txt').astype(np.int32)
     #bfm_kpt_ind = np.loadtxt('Data/uv-data/bfm_kpt_ind.txt').astype(np.int32)
     face_detector = dlib.cnn_face_detection_model_v1(face_detector_path)
-    #shape_predictor = dlib.shape_predictor(shape_predictor_path)
+    shape_predictor = dlib.shape_predictor(shape_predictor_path)
 
     pos_predictor = MobilenetPosPredictor(256, 256)
     mobilenet_pos_predictor = os.path.join('', model_path)  # Data/net-data/keras_mobilenet_prn_20_epochs_097.h5')
@@ -163,8 +162,8 @@ def main():
                 side_img = (side_img * 255).astype(np.uint8)
             side_img = np.around(side_img, decimals=1).astype(np.uint8)
 
-        cropping_tform_front = get_cropping_transformation(front_img, face_detector)
-        cropping_tform_side = get_cropping_transformation(side_img, face_detector)
+        l68_front, cropping_tform_front = get_cropping_transformation(front_img, face_detector, shape_predictor)
+        _, cropping_tform_side = get_cropping_transformation(side_img, face_detector, shape_predictor)
 
         cropped_image_front = get_cropped_image(front_img, cropping_tform_front)
         cropped_image_side = get_cropped_image(side_img, cropping_tform_side)

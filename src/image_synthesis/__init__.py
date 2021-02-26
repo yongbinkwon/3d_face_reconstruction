@@ -19,8 +19,7 @@ def rotate_yaw_pose(yaw_pose):
     elif abs_yaw_pose <= np.pi/2:
         abs_yaw_pose -= np.pi/4
     else:
-        print("too large pose")
-        return yaw_pose
+        raise ValueError("Pose too large")
     return np.sign(yaw_pose)*abs_yaw_pose
 
 
@@ -74,9 +73,10 @@ class Synthesize():
         return warped, M
 
     def synthesize_image(self, img_fp):
-        param, landmarks, img_orig, yaw_pose = get_param(
+        param, landmarks, img_orig, poses = get_param(
             self.fitting_model, self.alignment_model, img_fp, self.opt
         )
+        yaw_pose = poses[0]
         rotated_yaw_pose = rotate_yaw_pose(yaw_pose)
         landmarks = np.array(landmarks).reshape(5, 2)
         if img_orig is None:
