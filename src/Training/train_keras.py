@@ -6,9 +6,9 @@ from sys import stdout
 
 import numpy as np
 import tensorflow as tf
-from TrainData import TrainData
+from .TrainData import TrainData
 from keras import optimizers
-from keras.backend.tensorflow_backend import set_session
+from tensorflow.python.keras.backend import set_session
 from keras.models import load_model
 
 from Networks import mobilenet_v2

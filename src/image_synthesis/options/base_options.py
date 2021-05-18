@@ -61,8 +61,8 @@ class BaseOptions():
         parser.add_argument('--no_instance', action='store_true', default='True', help='if specified, do *not* add instance map as input')
         parser.add_argument('--nef', type=int, default=16, help='# of encoder filters in the first conv layer')
 
-        parser.add_argument('--no_gaussian_landmark', action='store_true', help='whether to use no_gaussian_landmark (1.0 landmark) for rotatespade model')
-        parser.add_argument('--label_mask', action='store_true', help='whether to use face mask')
+        parser.add_argument('--no_gaussian_landmark', action='store_false', help='whether to use no_gaussian_landmark (1.0 landmark) for rotatespade model')
+        parser.add_argument('--label_mask', action='store_false', help='whether to use face mask')
         parser.add_argument('--heatmap_size', type=float, default=2.5, help='the size of the heatmap, used in rotatespade model')
         parser.add_argument('--erode_kernel', type=int, default=21, help='erode kernel size, used in renderer')
 
