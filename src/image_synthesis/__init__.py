@@ -15,9 +15,9 @@ from .model_fitting.model_fitting import load_3ddfa, get_param
 def rotate_yaw_pose(yaw_pose):
     abs_yaw_pose = abs(yaw_pose)
     if abs_yaw_pose <= np.pi/4:
-        abs_yaw_pose += np.pi/4
+        abs_yaw_pose += np.pi/6
     elif abs_yaw_pose <= np.pi/2:
-        abs_yaw_pose -= np.pi/4
+        abs_yaw_pose -= np.pi/6
     else:
         raise ValueError("Pose too large")
     return np.sign(yaw_pose)*abs_yaw_pose
@@ -76,6 +76,7 @@ class Synthesize():
         param, landmarks, img_orig, poses = get_param(
             self.fitting_model, self.alignment_model, img_fp, self.opt
         )
+        print(landmarks)
         yaw_pose = poses[0]
         rotated_yaw_pose = rotate_yaw_pose(yaw_pose)
         landmarks = np.array(landmarks).reshape(5, 2)

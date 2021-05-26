@@ -31,8 +31,8 @@ def generate_300WLP_dataset(root_300wlp_folder, save_dataset_folder, save_datase
     uv_coords = face3d.morphable_model.load.load_uv_coords('../Data/BFM/Out/BFM_UV.mat')
     uv_coords = process_uv(uv_coords)
 
-    bfm = MorphabelModel('../Data/BFM/Out/BFM.mat')
-
+    bfm = MorphabelModel("~/yongbk/Downloads/PublicMM1/01_MorphableModel.mat")
+    
     datasetReader = DatasetReader(root_300wlp_folder)
     face_list = datasetReader.getFacesFromDataset()
 
