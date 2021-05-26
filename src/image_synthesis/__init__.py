@@ -43,15 +43,15 @@ class Synthesize():
         self.opt.gpu_ids =  list (range (0, self.ngpus))
         print('Testing gpu ', self.opt.gpu_ids)
 
-        self.device = torch.device("cuda:0")
-        self.model = TestModel(self.opt).to(self.device)
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.model = TestModel(self.opt)
         self.model.eval()
-        """
+        
         self.model = torch.nn.DataParallel(self.model.cuda(),
                                     device_ids=self.opt.gpu_ids,
                                     output_device=self.opt.gpu_ids[-1],
                                     )
-        """
+        
         self.save_path = os.path.join(self.opt.save_path, self.opt.dataset_name)
 
         # test
@@ -97,14 +97,11 @@ class Synthesize():
             img = cv2.cvtColor(img_orig, cv2.COLOR_BGR2RGB)
 
             wrapped_img, M = self.affine_align(img, landmarks)
-            M = torch.from_numpy(np.expand_dims(M, axis=0)).float().to(self.device)
+            M = torch.from_numpy(np.expand_dims(M, axis=0)).float()
             wrapped_img = wrapped_img.transpose(2, 0, 1) / 255.0
             wrapped_img = torch.from_numpy(np.expand_dims(wrapped_img, axis=0)).float()
 
-            #self.postprocess(wrapped_img, M)
-
-
-            data = get_input(wrapped_img, M, self.render_layer_list[0], rotated_yaw_pose, param, self.device)
+            data = get_input(wrapped_img, M, self.render_layer_list[0], rotated_yaw_pose, param)
             rotated_image = self.model.forward(data, mode='single')
             return_image = util.tensor2im(rotated_image[0])
 

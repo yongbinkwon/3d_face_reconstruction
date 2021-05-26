@@ -1,7 +1,7 @@
 import torch
 
-def get_input(image, M, render, yaw_pose, param, device):
-    real_image = image.to(device)
+def get_input(image, M, render, yaw_pose, param):
+    real_image = image
     rotated_meshs = []
     rotated_landmarks_list = []
     original_angles_list = []
@@ -19,9 +19,9 @@ def get_input(image, M, render, yaw_pose, param, device):
     output = {}
     real_image = real_image * 2 - 1
     rotated_meshs = rotated_meshs * 2 - 1
-    output['image'] = real_image
-    output['rotated_mesh'] = rotated_meshs.to(device)
-    output['rotated_landmarks'] = rotated_landmarks_list.to(device)
-    output['rotated_landmarks_106'] = rotated_landmarks_list_106.to(device)
-    output['original_angles'] = original_angles_list.to(device)
+    output['image'] = real_image.cpu()
+    output['rotated_mesh'] = rotated_meshs.cpu()
+    output['rotated_landmarks'] = rotated_landmarks_list.cpu()
+    output['rotated_landmarks_106'] = rotated_landmarks_list_106.cpu()
+    output['original_angles'] = original_angles_list.cpu()
     return output
