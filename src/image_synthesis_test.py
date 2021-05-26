@@ -7,3 +7,4 @@ if __name__ == '__main__':
     images = glob.glob("image_synthesis/model_fitting/example/Images/*.jpg")
     for filename in tqdm(images):
         synthesizer.synthesize_image(filename)
+    #synthesizer.synthesize_image("image_synthesis/model_fitting/example/Images/hei2.jpg")

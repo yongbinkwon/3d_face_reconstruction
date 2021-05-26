@@ -22,6 +22,10 @@ def rotate_yaw_pose(yaw_pose):
         raise ValueError("Pose too large")
     return np.sign(yaw_pose)*abs_yaw_pose
 
+def save_img(img, save_path):
+    image_numpy = util.tensor2im(img)
+    util.save_image(image_numpy, save_path, create_dir=True)
+    return image_numpy
 
 class Synthesize():
 
@@ -39,12 +43,15 @@ class Synthesize():
         self.opt.gpu_ids =  list (range (0, self.ngpus))
         print('Testing gpu ', self.opt.gpu_ids)
 
-        self.model = TestModel(self.opt)
+        self.device = torch.device("cuda:0")
+        self.model = TestModel(self.opt).to(self.device)
         self.model.eval()
+        """
         self.model = torch.nn.DataParallel(self.model.cuda(),
                                     device_ids=self.opt.gpu_ids,
                                     output_device=self.opt.gpu_ids[-1],
                                     )
+        """
         self.save_path = os.path.join(self.opt.save_path, self.opt.dataset_name)
 
         # test
@@ -72,30 +79,38 @@ class Synthesize():
         warped = cv2.warpAffine(img, M, (self.opt.crop_size, self.opt.crop_size), borderValue=0.0)
         return warped, M
 
+    def postprocess(self, img, M):
+        return img, M
+        
+
+
     def synthesize_image(self, img_fp):
-        param, landmarks, img_orig, poses = get_param(
-            self.fitting_model, self.alignment_model, img_fp, self.opt
-        )
-        print(landmarks)
-        yaw_pose = poses[0]
-        rotated_yaw_pose = rotate_yaw_pose(yaw_pose)
-        landmarks = np.array(landmarks).reshape(5, 2)
-        if img_orig is None:
-            raise Exception('No Image')
-        img = cv2.cvtColor(img_orig, cv2.COLOR_BGR2RGB)
+        with torch.no_grad():
+            param, landmarks, img_orig, poses = get_param(
+                self.fitting_model, self.alignment_model, img_fp, self.opt
+            )
+            yaw_pose = poses[0]
+            rotated_yaw_pose = rotate_yaw_pose(yaw_pose)
+            landmarks = np.array(landmarks).reshape(5, 2)
+            if img_orig is None:
+                raise Exception('No Image')
+            img = cv2.cvtColor(img_orig, cv2.COLOR_BGR2RGB)
 
-        wrapped_img, M = self.affine_align(img, landmarks)
-        M = torch.from_numpy(np.expand_dims(M, axis=0)).float()
-        wrapped_img = wrapped_img.transpose(2, 0, 1) / 255.0
-        wrapped_img = torch.from_numpy(np.expand_dims(wrapped_img, axis=0)).float()
-        data = get_input(wrapped_img, M, self.render_layer_list[0], rotated_yaw_pose, param)
+            wrapped_img, M = self.affine_align(img, landmarks)
+            M = torch.from_numpy(np.expand_dims(M, axis=0)).float().to(self.device)
+            wrapped_img = wrapped_img.transpose(2, 0, 1) / 255.0
+            wrapped_img = torch.from_numpy(np.expand_dims(wrapped_img, axis=0)).float()
 
-        rotated_image = self.model.forward(data, mode='single')
-        return_image = util.tensor2im(rotated_image[0])
+            #self.postprocess(wrapped_img, M)
 
-        if self.opt.save_image:
-            rotated_image_savepath = os.path.join(self.save_path, img_fp.split("/")[-1])
-            util.save_image(return_image, rotated_image_savepath, create_dir=True)
+
+            data = get_input(wrapped_img, M, self.render_layer_list[0], rotated_yaw_pose, param, self.device)
+            rotated_image = self.model.forward(data, mode='single')
+            return_image = util.tensor2im(rotated_image[0])
+
+            if self.opt.save_image:
+                rotated_image_savepath = os.path.join(self.save_path, img_fp.split("/")[-1])
+                save_img(rotated_image[0], rotated_image_savepath)
         
         return return_image
 
