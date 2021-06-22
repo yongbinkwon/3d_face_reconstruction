@@ -1,6 +1,7 @@
 import torch
 from . import networks
 from ..util import util
+import skimage.io
 from ..data import curve
 import numpy as np
 import os
@@ -17,7 +18,7 @@ class TestModel(RotateSPADEModel):
         super(TestModel, self).__init__(opt)
 
 
-    def forward(self, data, mode):
+    def forward(self, data, mode, img_fp):
         if mode == 'single':
             real_image = data['image']
             rotated_landmarks = data['rotated_landmarks']
@@ -25,6 +26,10 @@ class TestModel(RotateSPADEModel):
             self.rotated_seg, rotated_seg_all = \
                 self.get_seg_map(rotated_landmarks, self.opt.no_gaussian_landmark, self.opt.crop_size, original_angles)
             rotated_mesh = data['rotated_mesh']
+            """
+            im = util.tensor2im(rotated_mesh[0])
+            skimage.io.imsave(f"debug/{img_fp.split('/')[-1]}", im)
+            """
             if self.opt.label_mask:
                 rotated_mesh = (rotated_mesh + rotated_seg_all[:, 4].unsqueeze(1) + rotated_seg_all[:, 0].unsqueeze(1))
                 rotated_mesh[rotated_mesh >= 1] = 0

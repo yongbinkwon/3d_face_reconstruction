@@ -8,7 +8,7 @@ from .architecture import SPADEResnetBlock as SPADEResnetBlock
 from .architecture import ResnetSPADEBlock
 from torch.utils.checkpoint import checkpoint
 
-
+torch.backends.cudnn.enabled = False
 class Interpolate(nn.Module):
     def __init__(self, scale_factor=2, size=None, mode='bilinear'):
         super(Interpolate, self).__init__()

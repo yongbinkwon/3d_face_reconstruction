@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from numpy.lib.npyio import save
 import torch
 import cv2
 from tqdm import tqdm
@@ -79,12 +80,7 @@ class Synthesize():
         warped = cv2.warpAffine(img, M, (self.opt.crop_size, self.opt.crop_size), borderValue=0.0)
         return warped, M
 
-    def postprocess(self, img, M):
-        return img, M
-        
-
-
-    def synthesize_image(self, img_fp):
+    def synthesize_image(self, img_fp, save_fp):
         with torch.no_grad():
             param, landmarks, img_orig, poses = get_param(
                 self.fitting_model, self.alignment_model, img_fp, self.opt
@@ -101,15 +97,15 @@ class Synthesize():
             wrapped_img = wrapped_img.transpose(2, 0, 1) / 255.0
             wrapped_img = torch.from_numpy(np.expand_dims(wrapped_img, axis=0)).float()
 
-            data = get_input(wrapped_img, M, self.render_layer_list[0], rotated_yaw_pose, param)
-            rotated_image = self.model.forward(data, mode='single')
-            return_image = util.tensor2im(rotated_image[0])
+            data = get_input(wrapped_img, M, self.render_layer_list[0], rotated_yaw_pose, param, img_fp)
+            rotated_image = self.model.forward(data, 'single', img_fp)
+            #return_image = util.tensor2im(rotated_image[0])
 
             if self.opt.save_image:
-                rotated_image_savepath = os.path.join(self.save_path, img_fp.split("/")[-1])
-                save_img(rotated_image[0], rotated_image_savepath)
+                #rotated_image_savepath = os.path.join(self.save_path, img_fp.split("/")[-1])
+                save_img(rotated_image[0], save_fp)
         
-        return return_image
+        return rotated_image
 
 
 

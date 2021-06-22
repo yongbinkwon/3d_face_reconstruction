@@ -24,7 +24,6 @@ from . import mobilenet_v1
 
 STD_SIZE = 120
 
-
 def load_3ddfa(args):
     # 1. load pre-trained model
     checkpoint_fp = 'image_synthesis/model_fitting/models/phase1_wpdc_vdc.pth.tar'
@@ -39,7 +38,6 @@ def load_3ddfa(args):
         model_dict[k.replace('module.', '')] = checkpoint[k]
     model.load_state_dict(model_dict)
     if args.mode == 'gpu':
-        cudnn.benchmark = True
         model = model.cuda()
     model.eval()
 

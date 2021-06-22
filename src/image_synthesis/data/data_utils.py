@@ -1,6 +1,7 @@
 import torch
+import skimage.io
 
-def get_input(image, M, render, yaw_pose, param):
+def get_input(image, M, render, yaw_pose, param, img_fp):
     real_image = image
     rotated_meshs = []
     rotated_landmarks_list = []

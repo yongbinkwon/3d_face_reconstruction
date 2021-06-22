@@ -10,7 +10,6 @@ import sys
 import neural_renderer as nr
 
 
-
 def _get_suffix(filename):
     """a.jpg -> jpg"""
     pos = filename.rfind('.')

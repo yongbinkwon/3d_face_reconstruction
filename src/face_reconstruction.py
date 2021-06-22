@@ -136,7 +136,8 @@ class Face_reconstructor:
     def reconstruct(self, img_fp, obj_save_fp):
 
         front_img = imread(img_fp)[:, :, :3]
-        side_img = self.synthesizer.synthesize_image(img_fp)[:, :, :3]
+        #side_img = self.synthesizer.synthesize_image(img_fp)[:, :, :3]
+        side_img = imread("./test_images/00003/side.jpg")[:, :, :3]
 
         if front_img.shape != (256, 256, 3):
             max_size = max(front_img.shape[0], front_img.shape[1])

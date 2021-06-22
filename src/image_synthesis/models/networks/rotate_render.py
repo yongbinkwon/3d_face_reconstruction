@@ -1,6 +1,5 @@
 from .render import *
 
-
 def _get_suffix(filename):
     """a.jpg -> jpg"""
     pos = filename.rfind('.')
@@ -77,7 +76,7 @@ class TestRender(Render):
             rendered_images_erode = None
             if erode:
                 with torch.cuda.device(self.current_gpu):
-                    rendered_images, depths, masks, = self.renderer(vertices_ori_normal, self.faces_use, texs)  # rendered_images: batch * 3 * h * w, masks: batch * h * w
+                    rendered_images, depths, masks, = self.renderer.render(vertices_ori_normal, self.faces_use, texs)  # rendered_images: batch * 3 * h * w, masks: batch * h * w
                 masks_erode = self.generate_erode_mask(masks, kernal_size=15)
                 rendered_images = rendered_images.cpu()
                 if grey_background:
@@ -104,7 +103,7 @@ class TestRender(Render):
             # render face to rotated pose
             with torch.no_grad():
                 with torch.cuda.device(self.current_gpu):
-                    rendered_images, depths, masks, = self.renderer(vertices, self.faces_use, texs)
+                    rendered_images, depths, masks, = self.renderer.render(vertices, self.faces_use, texs)
 
             # rendered_images = rendered_images.cpu()
             #

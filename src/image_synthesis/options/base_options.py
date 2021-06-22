@@ -68,7 +68,7 @@ class BaseOptions():
 
         #3ddfa
         parser.add_argument('-m', '--mode', default='gpu', type=str, help='gpu or cpu mode')
-        parser.add_argument('--bbox_init', default='two', type=str,
+        parser.add_argument('--bbox_init', default='one', type=str,
                             help='one|two: one-step bbox initialization or two-step')
         parser.add_argument('--dump_2d_img', default='true', type=str2bool, help='whether to save 3d rendered image')
         parser.add_argument('--dump_param', default='true', type=str2bool, help='whether to save param')

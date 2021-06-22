@@ -301,7 +301,7 @@ class RotateSPADEModel(torch.nn.Module):
                 raise ('Generator must exist!')
         else:
             # network.load_state_dict(torch.load(save_path))
-            try:
+            try:          
                 network.load_state_dict(torch.load(save_path))
             except:
                 pretrained_dict = torch.load(save_path)

@@ -1,80 +1,41 @@
-import argparse
 import os
-import random
-from os import path
-
-import face3d
-import numpy as np
-import skimage.transform
-from face3d.face3d.morphable_model import MorphabelModel
-from Dataset.dataset_generator.facegen_to_posmap import generate_posmap_facegen_bfm
-from Dataset.dataset_generator.pos_map_code import process_uv, run_posmap_300W_LP
 from skimage import io
+import skimage.transform
+import numpy as np
+from image_synthesis import Synthesize
+import face3d
+from face3d.morphable_model import MorphabelModel
+from .pos_map_code import process_uv, run_posmap_300W_LP
+from Dataset.dataset_generator.facegen_to_posmap import generate_posmap_facegen_bfm
+from tqdm import tqdm
 
-from Dataset.dataset_reader.DatasetReader import DatasetReader
-
-
-def get_front_and_side_poses(face):
-    front_poses = []
-    side_poses = []
-    for face_pose in face.face_poses:
-        if face_pose.pose > 45. or face_pose.pose < -45.:
-            side_poses.append(face_pose)
-        elif face_pose.pose < 45. and face_pose.pose > -45.:
-            front_poses.append(face_pose)
-        else:
-            continue
-    return front_poses, side_poses
-
-
-def generate_300WLP_dataset(root_300wlp_folder, save_dataset_folder, save_datasetlabel):
-    uv_coords = face3d.morphable_model.load.load_uv_coords('../Data/BFM/Out/BFM_UV.mat')
+"""
+def generate_300WLP_dataset(root_300wlp_folder="/lhome/yongbk/300W-LP/300W_LP", output_root_folder="/lhome/yongbk/results/300W-LP", file_list_fp="/lhome/yongbk/results/300W-LP/file_list.txt"):
+    uv_coords = face3d.morphable_model.load.load_uv_coords("Data/BFM/BFM_UV.mat")
     uv_coords = process_uv(uv_coords)
+    bfm = MorphabelModel("Data/BFM/BFM.mat")
 
-    bfm = MorphabelModel("~/yongbk/Downloads/PublicMM1/01_MorphableModel.mat")
-    
-    datasetReader = DatasetReader(root_300wlp_folder)
-    face_list = datasetReader.getFacesFromDataset()
+    synthesizer = Synthesize()
+    directories_to_skip = ["Code", "landmarks"]
 
-    fp_label = open(save_datasetlabel, "w")
-    len_face_list = len(face_list)
-    for i, face in enumerate(face_list):
-        print('generating data for face: %s\t(%d/%d)' % (face.face_id, i + 1, len_face_list))
-        save_folder = os.path.join(save_dataset_folder, face.dataset_name)
-        if not os.path.exists(save_folder):
-            os.makedirs(save_folder)
-        face.sort_face_poses()
+    file_list = open(file_list_fp, "w")
+    for dataset in list(filter(lambda directory: directory not in directories_to_skip, os.listdir(root_300wlp_folder))):
+        if not os.path.exists(f"{output_root_folder}/{dataset}"):
+            os.makedirs(f"{output_root_folder}/{dataset}")
+        for file in list(filter(lambda file: file.endswith(".jpg"), os.listdir(f"{root_300wlp_folder}/{dataset}"))):
+            img_fp = f"{root_300wlp_folder}/{dataset}/{file}"
+            mat_fp = os.path.splitext(img_fp)[0]+".mat"
+            output_folder = f"{output_root_folder}/{dataset}"
+            run_posmap_300W_LP(bfm, uv_coords, img_fp, mat_fp, output_folder)
 
-        front_poses, side_poses = get_front_and_side_poses(face)
+            save_img_fp = f"{output_root_folder}/{dataset}/{file}"
+            save_rotated_img_fp = f"{output_root_folder}/{dataset}/{os.path.splitext(file)[0]}_rotate.{os.path.splitext(file)[1]}"
+            imsave(save_rotated_img_fp, np.uint8(synthesizer.synthesize_image(img_fp)))
+            save_npy_fp = os.path.splitext(save_img_fp)[0]+".npy"
 
-        if not front_poses or not side_poses:
-            print('passing, no fitting pose pairs')
-            continue
-
-        for face_pose in front_poses:
-            side_pose = random.choice(side_poses)
-            save_img_path_side = side_pose.img_path.replace(root_300wlp_folder, save_dataset_folder)
-            mat_path = face_pose.mat_path
-            img_path = face_pose.img_path
-            save_img_path = img_path.replace(root_300wlp_folder, save_dataset_folder)
-            save_npy_path = save_img_path.replace('jpg', 'npy')
-
-            if os.path.exists(save_img_path) and os.path.exists(save_npy_path):
-                fp_label.writelines(save_img_path + ' ' + save_img_path_side + ' ' + save_npy_path + '\n')
-                print('passing, posmap already generated')
-                continue
-
-            fp_label.writelines(save_img_path + ' ' + save_img_path_side + ' ' + save_npy_path + '\n')
-            run_posmap_300W_LP(bfm, uv_coords, img_path, mat_path, save_folder)
-    fp_label.close()
-
-
-def get_face_save_path(face, root_dataset_folder, save_dataset_folder):
-    face_save_path = face.img_path.replace(root_dataset_folder, save_dataset_folder)
-    face_path_list = face_save_path.split('/')
-    face_save_path = os.path.join(face_path_list[0], face_path_list[1], face_path_list[2], face_path_list[4])
-    return face_save_path
-
+            file_list.write(f"{save_img_fp} {save_rotated_img_fp} {save_npy_fp}\n")
+    file_list.close()
+"""
 
 def get_random_subfolder(folder_path, is_image=False):
     dirs = np.array(os.listdir(folder_path))
@@ -85,9 +46,8 @@ def get_random_subfolder(folder_path, is_image=False):
     random_dir_path = os.path.join(folder_path, random_dir)
     return random_dir_path
 
-
 def apply_random_background(image):
-    dtd_path = '../Data/dtd/images'  # texture dataset
+    dtd_path = 'Data/dtd/images'  # texture dataset
     random_dir_path = get_random_subfolder(dtd_path)  # random category
     random_img_path = get_random_subfolder(random_dir_path, is_image=True)  # random image within category
 
@@ -103,103 +63,164 @@ def apply_random_background(image):
     return image_with_bg
 
 
-def generate_facegen_dataset(root_dataset_folder, save_dataset_folder, save_dataset_label):
-    bfm = MorphabelModel('../Data/BFM/Out/BFM.mat')
-    uv_coords = face3d.morphable_model.load.load_uv_coords('../Data/BFM/Out/BFM_UV.mat')
+def generate_facegen_dataset(dataset_root_folder, save_root_folder, file_list):
+    bfm = MorphabelModel('Data/BFM/BFM.mat')
+    uv_coords = face3d.morphable_model.load.load_uv_coords('Data/BFM/BFM_UV.mat')
     uv_coords = process_uv(uv_coords)
 
-    side_img_cropping_tform = skimage.transform.AffineTransform(scale=(0.8, 0.8))
+    synthesizer = Synthesize()
     image_h, image_w = 256, 256
 
-    datasetReader = DatasetReader(root_dataset_folder, dataset_name='facegen')
-    face_list = datasetReader.getFacesFromDataset()
-    len_face_list = len(face_list)
-    fp_label = open(save_dataset_label, "w")
-    for i, face in enumerate(face_list):
-        print('generating data for face: %s\t(%d/%d)' % (face.face_id, i + 1, len_face_list))
-        save_folder = os.path.join(save_dataset_folder, face.dataset_name)
-        if not os.path.exists(save_folder):
-            os.makedirs(save_folder)
+    already_generated_subjects = os.listdir(save_root_folder)
+    subjects_to_generate = list(filter(lambda directory: directory not in already_generated_subjects, os.listdir(dataset_root_folder)))
+    #subjects_to_generate = os.listdir(dataset_root_folder)
+    with open(file_list, 'a') as f:
+        for subject_number in subjects_to_generate:
+            print(f"subject {subject_number}")
+            obj_fp = os.path.join(dataset_root_folder, subject_number, f"subject_{subject_number}.obj")
+            save_folder = os.path.join(save_root_folder, subject_number)
+            for i in range(-4, 4):
+                if not os.path.exists(save_folder):
+                    os.makedirs(save_folder)
+                current_img_fp = os.path.join(dataset_root_folder, subject_number, f"render_{i}.png")
+                img_save_fp = os.path.join(save_folder, f"orig_{i}.png")
+                rotated_img_fp = os.path.join(save_folder, f"rotated_{i}.png")
+                posmap_fp = os.path.join(save_folder, f"posmap_{i}.npy")
+                cropping_tform = generate_posmap_facegen_bfm(bfm, uv_coords, current_img_fp, obj_fp, posmap_fp, save_image=True)
+                current_img = io.imread(current_img_fp)
+                current_img_cropped = skimage.transform.warp(current_img, cropping_tform.inverse,
+                                                            output_shape=(image_h, image_w), preserve_range=True)
+                img = apply_random_background(current_img_cropped.astype(np.uint8))
+                io.imsave(img_save_fp, img, check_contrast=False)
+                
+                try:
+                    synthesizer.synthesize_image(img_save_fp, rotated_img_fp)
+                except TypeError:
+                    print("bricked"+img_save_fp)
+                    continue
+                
 
-        # set faces and set save paths for the images
-        front_face = face.face_poses[0]
-        left_face = face.face_poses[1]  # left
-        right_face = face.face_poses[2]  # right
-        front_face_save_path = get_face_save_path(front_face, root_dataset_folder, save_dataset_folder)
-        left_face_save_path = get_face_save_path(left_face, root_dataset_folder, save_dataset_folder)
-        right_face_save_path = get_face_save_path(right_face, root_dataset_folder, save_dataset_folder)
+                f.write(img_save_fp + ' ' + rotated_img_fp + ' ' + posmap_fp + '\n')
 
-        # get the base mesh path and dataset posmap path
-        obj_path = front_face.img_path.replace('_front.png', '.obj')
-        pos_map_path = front_face_save_path.replace('png', 'npy')
+def sort_dataset(dataset_root_folder, save_root_folder, file_list):
+    bfm = MorphabelModel('Data/BFM/BFM.mat')
+    uv_coords = face3d.morphable_model.load.load_uv_coords('Data/BFM/BFM_UV.mat')
+    uv_coords = process_uv(uv_coords)
 
-        # if posmap already exists, skip
-        if os.path.exists(front_face_save_path) and os.path.exists(left_face_save_path) and os.path.exists(
-                right_face_save_path) and os.path.exists(pos_map_path):
-            fp_label.write(front_face_save_path + ' ' + left_face_save_path + ' ' + pos_map_path + '\n')
-            fp_label.write(front_face_save_path + ' ' + right_face_save_path + ' ' + pos_map_path + '\n')
-            print('passing')
-            continue
+    synthesizer = Synthesize()
+    image_h, image_w = 256, 256
 
-        # generate posmap and get cropping transforms
-        front_img_cropping_tform = generate_posmap_facegen_bfm(bfm, uv_coords, obj_path, pos_map_path, save_image=True)
+    with open(file_list, 'w') as f:
+        for i in range(1, 2407):
+            subject_number = str(i)
+            print(f"subject {subject_number}")
+            obj_fp = os.path.join(dataset_root_folder, subject_number, f"subject_{subject_number}.obj")
+            save_folder = os.path.join(save_root_folder, subject_number)
+            for i in range(-4, 4):
+                if not os.path.exists(save_folder):
+                    os.makedirs(save_folder)
+                current_img_fp = os.path.join(dataset_root_folder, subject_number, f"render_{i}.png")
+                img_save_fp = os.path.join(save_folder, f"orig_{i}.png")
+                rotated_img_fp = os.path.join(save_folder, f"rotated_{i}.png")
+                posmap_fp = os.path.join(save_folder, f"posmap_{i}.npy")
+                if not os.path.isfile(img_save_fp) or not os.path.isfile(posmap_fp):
+                    cropping_tform = generate_posmap_facegen_bfm(bfm, uv_coords, current_img_fp, obj_fp, posmap_fp, save_image=True)
+                    current_img = io.imread(current_img_fp)
+                    current_img_cropped = skimage.transform.warp(current_img, cropping_tform.inverse,
+                                                            output_shape=(image_h, image_w), preserve_range=True)
+                    img = apply_random_background(current_img_cropped.astype(np.uint8))
+                    io.imsave(img_save_fp, img, check_contrast=False)
+                
+                if not os.path.isfile(rotated_img_fp):
+                    try:
+                        synthesizer.synthesize_image(img_save_fp, rotated_img_fp)
+                    except TypeError:
+                        print("bricked"+img_save_fp)
+                        continue
 
-        # read image
-        front_image = io.imread(front_face.img_path)
-        left_image = io.imread(left_face.img_path)
-        right_image = io.imread(right_face.img_path)
+                f.write(img_save_fp + ' ' + rotated_img_fp + ' ' + posmap_fp + '\n')
 
-        # crop images
-        front_image_cropped = skimage.transform.warp(front_image, front_img_cropping_tform.inverse,
-                                                     output_shape=(image_h, image_w), preserve_range=True)
-        left_image_cropped = skimage.transform.warp(left_image, side_img_cropping_tform,
-                                                    output_shape=(image_h, image_w), preserve_range=True)
-        right_image_cropped = skimage.transform.warp(right_image, side_img_cropping_tform,
-                                                     output_shape=(image_h, image_w), preserve_range=True)
+def generate_rest(dataset_root_folder, save_root_folder, file_list):
+    bfm = MorphabelModel('Data/BFM/BFM.mat')
+    uv_coords = face3d.morphable_model.load.load_uv_coords('Data/BFM/BFM_UV.mat')
+    uv_coords = process_uv(uv_coords)
 
-        front_image_cropped = front_image_cropped.astype(int)
-        left_image_cropped = left_image_cropped.astype(int)
-        right_image_cropped = right_image_cropped.astype(int)
+    image_h, image_w = 256, 256
 
-        # apply random backgrounds to images and save them in target dataset
-        front_image = apply_random_background(front_image_cropped)
-        left_image = apply_random_background(left_image_cropped)
-        right_image = apply_random_background(right_image_cropped)
+    with open(file_list, 'a') as f:
+        for subject_number in os.listdir(dataset_root_folder):
+            num_files = len(os.listdir(os.path.join(save_root_folder, subject_number)))
+            if (num_files != 32):
+                print(num_files)
+                print(f"subject {subject_number}")
+                obj_fp = os.path.join(dataset_root_folder, subject_number, f"subject_{subject_number}.obj")
+                save_folder = os.path.join(save_root_folder, subject_number)
+                for i in range(-4, 4):
+                    img_save_fp = os.path.join(save_folder, f"orig_{i}.png")
+                    posmap_fp = os.path.join(save_folder, f"posmap_{i}.npy")
+                    rotated_img_fp = os.path.join(save_folder, f"rotated_{i}.png")
+                    if(os.path.isfile(img_save_fp) and os.path.isfile(posmap_fp) and os.path.isfile(rotated_img_fp)):
+                        continue
+                    current_img_fp = os.path.join(dataset_root_folder, subject_number, f"render_{i}.png")
+                    cropping_tform = generate_posmap_facegen_bfm(bfm, uv_coords, current_img_fp, obj_fp, posmap_fp, save_image=True)
+                    current_img = io.imread(current_img_fp)
+                    current_img_cropped = skimage.transform.warp(current_img, cropping_tform.inverse,
+                                                                output_shape=(image_h, image_w), preserve_range=True)
+                    img = apply_random_background(current_img_cropped.astype(np.uint8))
+                    io.imsave(img_save_fp, img, check_contrast=False)
 
-        io.imsave(front_face_save_path, front_image, check_contrast=False)
-        io.imsave(left_face_save_path, left_image, check_contrast=False)
-        io.imsave(right_face_save_path, right_image, check_contrast=False)
+                    print(img_save_fp + ' ' + rotated_img_fp + ' ' + posmap_fp)
+                    f.write(img_save_fp + ' ' + rotated_img_fp + ' ' + posmap_fp + '\n')
 
-        # update dataset label
-        fp_label.write(front_face_save_path + ' ' + left_face_save_path + ' ' + pos_map_path + '\n')
-        fp_label.write(front_face_save_path + ' ' + right_face_save_path + ' ' + pos_map_path + '\n')
-    fp_label.close()
+def fix_dataset(dataset_root_folder, save_root_folder, file_list):
+    bfm = MorphabelModel('Data/BFM/BFM.mat')
+    uv_coords = face3d.morphable_model.load.load_uv_coords('Data/BFM/BFM_UV.mat')
+    uv_coords = process_uv(uv_coords)
 
+    image_h, image_w = 256, 256
 
-def main(args):
-    if (args.dataset == 'facegen'):
-        print('using facegen dataset')
-        assert (path.exists(args.dataset_path_input))
-        generate_facegen_dataset(args.dataset_path_input, args.dataset_path_output, args.dataset_path_label)
-    elif (args.dataset == '300wlp'):
-        print('using 300w-lp dataset')
-        assert (path.exists(args.dataset_path_input))
-        generate_300WLP_dataset(args.dataset_path_input, args.dataset_path_output, args.dataset_path_label)
-    else:
-        raise NotImplementedError
+    with open(file_list, 'a') as f:
+        for subject_number in os.listdir(dataset_root_folder):
+            obj_fp = os.path.join(dataset_root_folder, subject_number, f"subject_{subject_number}.obj")
+            save_folder = os.path.join(save_root_folder, subject_number)
+            if not os.path.exists(save_folder):
+                os.makedirs(save_folder)
+            for i in range(-4, 4):
+                img_save_fp = os.path.join(save_folder, f"orig_{i}.png")
+                posmap_fp = os.path.join(save_folder, f"posmap_{i}.npy")
+                rotated_img_fp = os.path.join(save_folder, f"rotated_{i}.png")
+                if(os.path.isfile(img_save_fp) and os.path.isfile(posmap_fp)):
+                    f.write(img_save_fp + ' ' + rotated_img_fp + ' ' + posmap_fp + '\n')
+                else:
+                    current_img_fp = os.path.join(dataset_root_folder, subject_number, f"render_{i}.png")
+                    cropping_tform = generate_posmap_facegen_bfm(bfm, uv_coords, current_img_fp, obj_fp, posmap_fp, save_image=True)
+                    current_img = io.imread(current_img_fp)
+                    current_img_cropped = skimage.transform.warp(current_img, cropping_tform.inverse,
+                                                                output_shape=(image_h, image_w), preserve_range=True)
+                    img = apply_random_background(current_img_cropped.astype(np.uint8))
+                    io.imsave(img_save_fp, img, check_contrast=False)
 
+                    print(img_save_fp + ' ' + rotated_img_fp + ' ' + posmap_fp)
+                    f.write(img_save_fp + ' ' + rotated_img_fp + ' ' + posmap_fp + '\n')
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Dataset generator for 2D images to 3D position map training pairs')
-
-    parser.add_argument('--dataset', default='facegen', type=str,
-                        help='specify which image dataset to generate position maps from, facegen or 300wlp')
-    parser.add_argument('--dataset_path_input', default='../Data/FACEGEN_DB_10K', type=str,
-                        help='path to input dataset')
-    parser.add_argument('--dataset_path_output', default='../results/facegen_train_dataset', type=str,
-                        help='path to output dataset')
-    parser.add_argument('--dataset_path_label', default='../results/facegen_dataset_label.txt', type=str,
-                        help='path to resulting dataset label file')
-
-    main(parser.parse_args())
-    # generate_facegen_dataset('../Data/FACEGEN_DB_NEW_1K', '../results/facegen_train_dataset', '../results/facegen_dataset_label.txt')
+def generate_rotated(file_list):
+    synthesizer = Synthesize()
+    with open(file_list, 'r') as f:
+        rotate_filelist = open(os.path.join(os.path.dirname(file_list), "rotate_filelist.txt"), 'w+')
+        for line in tqdm(f):
+            img_fp, save_fp, _ = line.strip().split(' ')
+            img_fp = "/".join(["/disk2"]+img_fp.split("/")[2:])
+            save_fp = "/".join(["/disk2"]+save_fp.split("/")[2:])
+            try:
+                synthesizer.synthesize_image(img_fp, save_fp)
+                rotate_filelist.write(line)
+            except TypeError:
+                print("bricked "+line)
+                continue
+            """
+            print(img_fp)
+            synthesizer.synthesize_image(img_fp, save_fp)
+            rotate_filelist.write(line)
+            """
+            
+        rotate_filelist.close()

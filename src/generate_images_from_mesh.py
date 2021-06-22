@@ -105,7 +105,7 @@ parser = argparse.ArgumentParser(description='Generate png from micc mesh.')
 parser.add_argument('-m', '--mode', default='gpu', type=str, help='gpu or cpu mode')
 parser.add_argument('--bbox_init', default='two', type=str,
                             help='one|two: one-step bbox initialization or two-step')
-parser.add_argument('--path_prefix', default='/lhome/yongbk/florence', type=str, help='location of folder containing the meshes')
+parser.add_argument('--path_prefix', default='/mnt/lhome/lhome/yongbk/florence', type=str, help='location of folder containing the meshes')
 
 args = parser.parse_args()
 model, alignment_model = load_3ddfa(args)
@@ -144,6 +144,8 @@ class Subject:
             self.render.change_camera_pose(xmid_point, self.cam_height, distance)
             current_pose = self.render(f"{self.save_fp_prefix}_0_0.jpg", False)
             score, scale = calculate_score(current_pose)
+            print(current_pose)
+            print(scale)
         self.render(f"{self.save_fp_prefix}_0_0.jpg")
         print("align done")
  
@@ -210,8 +212,8 @@ class Render:
 
 if __name__ == '__main__':
     render = Render(np.pi / 3.0)
-    faultyOBJs = [3, 30]
-    for i in range(1, 54):
+    faultyOBJs = [3, 27, 30]
+    for i in range(27, 54):
         if i in faultyOBJs:
             continue
         else:
